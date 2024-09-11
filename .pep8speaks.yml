@@ -3,7 +3,7 @@ scanner:
     linter: pycodestyle  # Alternative option - flake8
 
 pycodestyle:  # Valid if scanner.linter is pycodestyle
-    max-line-length: 60
+    max-line-length: 100
     ignore: []  # Errors and warnings to ignore
     exclude: []  # File path patterns to exclude
     count: False
@@ -16,7 +16,7 @@ pycodestyle:  # Valid if scanner.linter is pycodestyle
     select: []
 
 flake8:  # Valid if scanner.linter is flake8
-    max-line-length: 60
+    max-line-length: 100
     ignore: []
     exclude: []
     count: False
