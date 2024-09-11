@@ -1,6 +1,5 @@
 # Avnirpy
 [![codecov](https://codecov.io/github/llgneuroresearch/avnirpy/graph/badge.svg?token=P97KLITHA0)](https://codecov.io/github/llgneuroresearch/avnirpy)
-
 ![Tests](https://github.com/llgneuroresearch/avnirpy/actions/workflows/test.yml/badge.svg?branch=main)
 
 Avnirpy is a library developed by Avnir Lab under the direction of Dr. Letourneau Guillon.
