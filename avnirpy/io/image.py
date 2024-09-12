@@ -12,8 +12,8 @@ def axcode_to_ras(axcode: List[str]) -> np.ndarray:
         axcode (List[str]): A list of three characters representing the axis direction code.
 
     Returns:
-        numpy.ndarray: A diagonal matrix representing the transformation from the axis direction code
-                       to the RAS coordinate system.
+        numpy.ndarray: A diagonal matrix representing the transformation from the axis direction
+                       code to the RAS coordinate system.
     """
     xfrm = [1, 1, 1, 1]
     for i, (code, ras) in enumerate(zip(axcode, ["R", "A", "S"])):
