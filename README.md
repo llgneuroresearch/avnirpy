@@ -9,7 +9,7 @@ It includes a range of tools primarily designed for CT scans segmentation and an
 
 ### Prerequisites
 
-- Python 3.9 or higher
+- Python >=3.9 and <3.12
 - Git
 
 ### Steps
@@ -17,8 +17,8 @@ It includes a range of tools primarily designed for CT scans segmentation and an
 1. **Clone the Repository**
 
 	```sh
-	git clone git@github.com:Onset-lab/onsetpy.git
-	cd onsetpy
+	git clone git@github.com:llgneuroresearch/avnirpy.git
+	cd avnirpy
 	```
 
 2. **Install Avnirpy**
