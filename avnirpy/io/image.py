@@ -11,7 +11,8 @@ def axcode_transform(axcode: List[str], to_axcode: List[str]) -> np.ndarray:
 
     Parameters:
         axcode (List[str]): A list of three characters representing the axis direction code.
-        to_axcode (List[str]): A list of three characters representing the target axis direction code.
+        to_axcode (List[str]): A list of three characters representing the target axis direction
+                               code.
 
     Returns:
         numpy.ndarray: A diagonal matrix representing the transformation from the axis direction
