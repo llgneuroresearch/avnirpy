@@ -25,7 +25,7 @@ def _build_arg_parser():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument("input", help="Path to the .nii.gz or image.")
+    parser.add_argument("input", help="Path to the .nii.gz image.")
     parser.add_argument("output", help="Path to the .nrrd image.")
 
     add_overwrite_arg(parser)

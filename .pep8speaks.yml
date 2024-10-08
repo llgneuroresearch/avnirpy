@@ -1,6 +1,6 @@
 scanner:
     diff_only: True  # If False, the entire file touched by the Pull Request is scanned for errors. If True, only the diff is scanned.
-    linter: pycodestyle  # Alternative option - flake8
+    linter: flake8  # Alternative option - flake8
 
 pycodestyle:  # Valid if scanner.linter is pycodestyle
     max-line-length: 100
