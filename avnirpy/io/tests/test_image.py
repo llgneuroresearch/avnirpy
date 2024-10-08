@@ -2,6 +2,7 @@ import numpy as np
 from unittest import mock
 import nibabel as nib
 from avnirpy.io.image import axcode_transform, load_nrrd, write_nrrd, load_nifti
+from avnirpy.io.image import get_labels_from_nrrd_header
 
 
 def test_axcode_transform():
@@ -21,10 +22,11 @@ def test_load_nrrd(mock_aff2axcodes, mock_nrrd_read):
     )
     mock_aff2axcodes.return_value = ["R", "A", "S"]
 
-    data, header, affine = load_nrrd("dummy_path")
+    data, nii_header, nrdd_header, affine = load_nrrd("dummy_path")
 
     assert data.shape == (10, 10, 10)
-    assert isinstance(header, nib.Nifti1Header)
+    assert isinstance(nii_header, nib.Nifti1Header)
+    assert isinstance(nrdd_header, dict)
     assert affine.shape == (4, 4)
 
 
@@ -59,3 +61,37 @@ def test_load_nifti(mock_nib_load):
     assert data.shape == (10, 10, 10)
     assert isinstance(header, nib.Nifti1Header)
     assert affine.shape == (4, 4)
+
+
+def test_get_labels_from_nrrd_header():
+    nrrd_header = {
+        "Segment1_ID": "Segment_1",
+        "Segment1_LabelValue": "1",
+        "Segment2_ID": "Segment_2",
+        "Segment2_LabelValue": "2",
+    }
+    expected_labels = {
+        1: "1",
+        2: "2",
+    }
+    result = get_labels_from_nrrd_header(nrrd_header)
+    assert result == expected_labels
+
+
+def test_get_labels_from_nrrd_header_empty():
+    nrrd_header = {}
+    expected_labels = {}
+    result = get_labels_from_nrrd_header(nrrd_header)
+    assert result == expected_labels
+
+
+def test_get_labels_from_nrrd_header_partial():
+    nrrd_header = {
+        "Segment1_ID": "Segment_1",
+        "Segment1_LabelValue": "1",
+    }
+    expected_labels = {
+        1: "1",
+    }
+    result = get_labels_from_nrrd_header(nrrd_header)
+    assert result == expected_labels

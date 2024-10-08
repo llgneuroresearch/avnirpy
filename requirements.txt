@@ -7,3 +7,4 @@ pytest-mock==3.14.*
 pytest-metadata==3.1.*
 pytest-console-scripts==1.4.*
 pytest-html==4.1.*
+pyyaml==6.0.*

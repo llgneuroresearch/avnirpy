@@ -1,6 +1,7 @@
 import nibabel as nib
 from nibabel.nifti1 import Nifti1Header
 import nrrd
+from nrrd.types import NRRDHeader
 import numpy as np
 from typing import List, Tuple
 
@@ -26,7 +27,9 @@ def axcode_transform(axcode: List[str], to_axcode: List[str]) -> np.ndarray:
     return np.diag(xfrm)
 
 
-def load_nrrd(nrrd_image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
+def load_nrrd(
+    nrrd_image: str,
+) -> Tuple[np.ndarray, Nifti1Header, NRRDHeader, np.ndarray]:
     """
     Load a NRRD image file.
 
@@ -36,13 +39,14 @@ def load_nrrd(nrrd_image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
     Returns:
         numpy.ndarray: The image data.
         Nifti1Header: The NIfTI header.
+        NRRDHeader: The NRRD header.
         numpy.ndarray: The affine transformation matrix.
     """
     img = nrrd.read(nrrd_image)
-    hdr = img[1]
+    nrrd_header = img[1]
 
-    translation = hdr["space origin"]
-    rotation = hdr["space directions"]
+    translation = nrrd_header["space origin"]
+    rotation = nrrd_header["space directions"]
     affine_nhdr = np.vstack(
         (np.hstack((rotation.T, np.reshape(translation, (3, 1)))), [0, 0, 0, 1])
     )
@@ -55,7 +59,7 @@ def load_nrrd(nrrd_image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
     nii_header["qform_code"] = 1
     nii_header["sform_code"] = 1
 
-    return img[0], nii_header, affine
+    return img[0], nii_header, nrrd_header, affine
 
 
 def write_nrrd(nrrd_image: str, data: np.ndarray, affine: np.ndarray) -> None:
@@ -96,3 +100,23 @@ def load_nifti(nifti_image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
     nii_header = img.header
 
     return img.get_fdata(), nii_header, affine
+
+
+def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> dict:
+    """
+    Extract the labels from the NRRD header.
+
+    Parameters:
+        nrrd_header (NRRDHeader): The NRRD header.
+
+    Returns:
+        dict: A dictionary mapping the label ID to the label name.
+    """
+    label_in_file = {}
+    for key in nrrd_header:
+        if "Segment" in key and "_ID" in key:
+            hdr_id = int(key.split("_")[0].replace("Segment", ""))
+            label_in_file[int(nrrd_header[f"Segment{hdr_id}_LabelValue"])] = (
+                nrrd_header[key].split("_")[-1]
+            )
+    return label_in_file

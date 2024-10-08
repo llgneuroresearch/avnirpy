@@ -2,6 +2,7 @@ import os
 from typing import Union, List
 
 from argparse import ArgumentParser, Namespace
+from nrrd.types import NRRDHeader
 import numpy as np
 
 
@@ -128,3 +129,46 @@ def assert_outputs_exist(
         check(required_file)
     for optional_file in optional or []:
         check(optional_file)
+
+
+def check_segment_extent(nrrd_header: NRRDHeader) -> bool:
+    """
+    Checks if all segment extent values in the NRRD header are consistent.
+
+    If any discrepancy is found, the function returns False.
+    If all values are consistent or no such keys are found, it returns True.
+
+    Args:
+        nrrd_header (NRRDHeader): The header of the NRRD file to be checked.
+
+    Returns:
+        bool: True if all segment extent values are consistent, False otherwise.
+    """
+    extend = ""
+    for key in nrrd_header:
+        if "Segment" in key and "_Extend" in key:
+            if extend == "":
+                extend = nrrd_header[key]
+            elif extend != nrrd_header[key]:
+                return False
+    return True
+
+
+def check_images_space(vol_header: NRRDHeader, labels_header: NRRDHeader) -> bool:
+    """
+    Check if the space of the volume and the labels are the same.
+
+    Args:
+        vol_header (NRRDHeader): The header of the volume image.
+        labels_header (NRRDHeader): The header of the labels image.
+
+    Returns:
+        bool: True if the space of the volume and the labels are the same, False otherwise.
+    """
+    return (
+        np.allclose(vol_header["space origin"], labels_header["space origin"])
+        and np.allclose(
+            vol_header["space directions"], labels_header["space directions"]
+        )
+        and vol_header["space"] == labels_header["space"]
+    )
