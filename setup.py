@@ -34,14 +34,7 @@ opts = dict(
     version=VERSION,
     packages=find_packages(),
     python_requires=PYTHON_VERSION,
-    entry_points={
-        "console_scripts": [
-            "{}=avnirpy.scripts.{}:main".format(
-                os.path.basename(s), os.path.basename(s).split(".")[0]
-            )
-            for s in SCRIPTS
-        ]
-    },
+    scripts=SCRIPTS,
     install_requires=external_dependencies,
 )
 

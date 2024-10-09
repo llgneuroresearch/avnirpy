@@ -63,7 +63,5 @@ MAJOR = _version_major
 MINOR = _version_minor
 MICRO = _version_micro
 VERSION = __version__
-SCRIPTS = filter(
-    lambda s: not os.path.basename(s) == "__init__.py", glob.glob("scripts/*.py")
-)
+SCRIPTS = glob.glob("scripts/*.py")
 PYTHON_VERSION = ">=3.9,<3.12"
