@@ -26,7 +26,7 @@ def replace_labels_in_file(
             label_data[label_data == labels_in_file[name]] = label
             label_nrrdhearder[f"{segment_match[name]}_LabelValue"] = label
             logging.warning(
-                f"Label {name} ({labels_in_file[name]}) has a different value in the config file ({label})."
-                " The NRRD file is modified."
+                f"Label {name} ({labels_in_file[name]}) has a different value in the config "
+                f"file ({label}). The NRRD file is modified."
             )
     return label_data, label_nrrdhearder
