@@ -36,5 +36,6 @@ jobs:
       - name: Build and push a singularity container
         run: |
           apptainer pull docker://avnirlab/avnirpy:latest
-          apptainer remote login -p ${{ secrets.SINGULARITY_TOKEN }} SylabsCloud
+          echo "${{ secrets.SINGULARITY_TOKEN }}" > token
+          apptainer remote login --tokenfile token
           apptainer push -U avnirpy_latest.sif library://avnirlab/avnirpy/avnirpy:latest
