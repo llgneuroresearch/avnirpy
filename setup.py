@@ -36,7 +36,7 @@ opts = dict(
     python_requires=PYTHON_VERSION,
     entry_points={
         "console_scripts": [
-            "{}=scripts.{}:main".format(
+            "{}=avnirpy.scripts.{}:main".format(
                 os.path.basename(s), os.path.basename(s).split(".")[0]
             )
             for s in SCRIPTS
