@@ -1,15 +1,14 @@
 import numpy as np
 from unittest import mock
 import nibabel as nib
-from avnirpy.io.image import axcode_transform, load_nrrd, write_nrrd, load_nifti
+from avnirpy.io.image import axcode_vector, load_nrrd, write_nrrd, load_nifti
 from avnirpy.io.image import get_labels_from_nrrd_header
 
 
 def test_axcode_transform():
     axcode = ["L", "P", "I"]
-    to_axcode = ["R", "A", "S"]
     expected = np.diag([-1, -1, -1, 1])
-    result = axcode_transform(axcode, to_axcode)
+    result = axcode_vector(axcode)
     np.testing.assert_array_equal(result, expected)
 
 
@@ -18,7 +17,11 @@ def test_axcode_transform():
 def test_load_nrrd(mock_aff2axcodes, mock_nrrd_read):
     mock_nrrd_read.return_value = (
         np.zeros((10, 10, 10)),
-        {"space origin": [0, 0, 0], "space directions": np.eye(3)},
+        {
+            "space origin": [0, 0, 0],
+            "space directions": np.eye(3),
+            "space": "left-posterior-superior",
+        },
     )
     mock_aff2axcodes.return_value = ["R", "A", "S"]
 
@@ -65,33 +68,47 @@ def test_load_nifti(mock_nib_load):
 
 def test_get_labels_from_nrrd_header():
     nrrd_header = {
-        "Segment1_ID": "Segment_1",
+        "Segment1_ID": "Segment_1_ICH",
+        "Segment1_Name": "ICH",
         "Segment1_LabelValue": "1",
-        "Segment2_ID": "Segment_2",
+        "Segment2_ID": "Segment_2_IVH",
+        "Segment2_Name": "IVH",
         "Segment2_LabelValue": "2",
     }
     expected_labels = {
-        1: "1",
-        2: "2",
+        "ICH": 1,
+        "IVH": 2,
     }
-    result = get_labels_from_nrrd_header(nrrd_header)
-    assert result == expected_labels
+    expected_match = {
+        "ICH": "Segment1",
+        "IVH": "Segment2",
+    }
+    result_labels, result_match = get_labels_from_nrrd_header(nrrd_header)
+    assert result_labels == expected_labels
+    assert result_match == expected_match
 
 
 def test_get_labels_from_nrrd_header_empty():
     nrrd_header = {}
     expected_labels = {}
-    result = get_labels_from_nrrd_header(nrrd_header)
-    assert result == expected_labels
+    expected_match = {}
+    result_labels, result_math = get_labels_from_nrrd_header(nrrd_header)
+    assert result_labels == expected_labels
+    assert result_math == expected_match
 
 
 def test_get_labels_from_nrrd_header_partial():
     nrrd_header = {
-        "Segment1_ID": "Segment_1",
+        "Segment1_ID": "Segment_1_ICH",
         "Segment1_LabelValue": "1",
+        "Segment1_Name": "ICH",
     }
     expected_labels = {
-        1: "1",
+        "ICH": 1,
     }
-    result = get_labels_from_nrrd_header(nrrd_header)
-    assert result == expected_labels
+    expected_match = {
+        "ICH": "Segment1",
+    }
+    result_labels, results_match = get_labels_from_nrrd_header(nrrd_header)
+    assert result_labels == expected_labels
+    assert results_match == expected_match

@@ -5,24 +5,32 @@ from nrrd.types import NRRDHeader
 import numpy as np
 from typing import List, Tuple
 
+SPACE_CONVERTER = {
+    "L": "left",
+    "R": "right",
+    "P": "posterior",
+    "A": "anterior",
+    "I": "inferior",
+    "S": "superior",
+}
 
-def axcode_transform(axcode: List[str], to_axcode: List[str]) -> np.ndarray:
+
+def axcode_vector(axcode: List[str]) -> np.ndarray:
     """
-    Converts the axis direction code to another coordinate system.
+    Generate a diagonal matrix representing the transformation for a given axis direction code.
+    For LPI, the transformation matrix is a diagonal of [-1, -1, -1, 1].
 
     Parameters:
         axcode (List[str]): A list of three characters representing the axis direction code.
-        to_axcode (List[str]): A list of three characters representing the target axis direction
-                               code.
 
     Returns:
-        numpy.ndarray: A diagonal matrix representing the transformation from the axis direction
-                       code to the target coordinate system.
+        numpy.ndarray: A diagonal matrix representing the transformation for the given axis
+        direction code.
     """
-    xfrm = [1, 1, 1, 1]
-    for i, (code, to_ax) in enumerate(zip(axcode, to_axcode)):
+    xfrm = [-1, -1, -1, 1]
+    for i, (code, to_ax) in enumerate(zip(axcode, ["L", "P", "I"])):
         if code != to_ax:
-            xfrm[i] = -1
+            xfrm[i] = 1
 
     return np.diag(xfrm)
 
@@ -51,8 +59,10 @@ def load_nrrd(
         (np.hstack((rotation.T, np.reshape(translation, (3, 1)))), [0, 0, 0, 1])
     )
     axcode = nib.orientations.aff2axcodes(affine_nhdr)
-    to_ras = axcode_transform(axcode, ["R", "A", "S"])
-    affine = np.dot(to_ras, affine_nhdr)
+    axcode = nrrd_header["space"].split("-")
+    axcode = [code[0].capitalize() for code in axcode]
+    transform = axcode_vector(axcode)
+    affine = np.dot(transform, affine_nhdr)
 
     nii_header = Nifti1Header()
     nii_header.set_xyzt_units(xyz=2, t=0)
@@ -62,23 +72,27 @@ def load_nrrd(
     return img[0], nii_header, nrrd_header, affine
 
 
-def write_nrrd(nrrd_image: str, data: np.ndarray, affine: np.ndarray) -> None:
+def write_nrrd(
+    nrrd_image: str, data: np.ndarray, affine: np.ndarray, header: dict = {}
+) -> None:
     """
     Write a NRRD image file.
 
     Parameters:
         nrrd_image (str): The path to save the NRRD image file.
         data (numpy.ndarray): The image data.
+        affine (numpy.ndarray): The affine transformation matrix.
         header (dict): The NRRD header.
     """
     axcode = nib.orientations.aff2axcodes(affine)
-    to_ras = axcode_transform(axcode, ["R", "A", "S"])
-    affine = np.dot(to_ras, affine)
+    transform = axcode_vector(axcode)
+    affine = np.dot(transform, affine)
 
-    header = {}
     header["space origin"] = affine[:3, 3]
     header["space directions"] = affine[:3, :3].T
-    header["space"] = "right-anterior-superior"
+    header["space"] = (
+        f"{SPACE_CONVERTER[axcode[0]]}-{SPACE_CONVERTER[axcode[1]]}-{SPACE_CONVERTER[axcode[2]]}"
+    )
 
     nrrd.write(nrrd_image, data, header)
 
@@ -102,7 +116,7 @@ def load_nifti(nifti_image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
     return img.get_fdata(), nii_header, affine
 
 
-def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> dict:
+def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> Tuple[dict, dict]:
     """
     Extract the labels from the NRRD header.
 
@@ -110,13 +124,20 @@ def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> dict:
         nrrd_header (NRRDHeader): The NRRD header.
 
     Returns:
-        dict: A dictionary mapping the label ID to the label name.
+        dict: A dictionary mapping the label name to the label ID.
+        dict: A dictionary mapping the label name to the segment ID.
     """
     label_in_file = {}
+    segment_match = {}
+    segments = []
     for key in nrrd_header:
         if "Segment" in key and "_ID" in key:
-            hdr_id = int(key.split("_")[0].replace("Segment", ""))
-            label_in_file[int(nrrd_header[f"Segment{hdr_id}_LabelValue"])] = (
-                nrrd_header[key].split("_")[-1]
-            )
-    return label_in_file
+            segments.append(key.split("_")[0])
+
+    for segment in segments:
+        label_in_file[nrrd_header[f"{segment}_Name"]] = int(
+            nrrd_header[f"{segment}_LabelValue"]
+        )
+        segment_match[nrrd_header[f"{segment}_Name"]] = segment
+
+    return label_in_file, segment_match
