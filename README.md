@@ -1,6 +1,7 @@
 # Avnirpy
 [![codecov](https://codecov.io/github/llgneuroresearch/avnirpy/graph/badge.svg?token=P97KLITHA0)](https://codecov.io/github/llgneuroresearch/avnirpy)
 ![Tests](https://github.com/llgneuroresearch/avnirpy/actions/workflows/test.yml/badge.svg?branch=main)
+[![Docker](https://github.com/llgneuroresearch/avnirpy/actions/workflows/docker.yml/badge.svg?branch=main)](https://hub.docker.com/r/avnirlab/avnirpy/tags)
 
 Avnirpy is a library developed by Avnir Lab under the direction of Dr. Letourneau Guillon.
 It includes a range of tools primarily designed for CT scans segmentation and analysis.
