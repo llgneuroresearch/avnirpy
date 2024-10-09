@@ -27,3 +27,14 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/avnirpy:latest
+
+      - uses: actions/checkout@v2
+      - uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.3.0
+
+      - name: Build and push a singularity container
+        run: |
+          apptainer pull docker://avnirlab/avnirpy:latest
+          apptainer remote login SylabsCloud -p ${{ secrets.SINGULARITY_TOKEN }}
+          apptainer push -U avnirpy_latest.sif library://avnirlab/avnirpy/avnirpy:latest
