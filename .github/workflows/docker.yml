@@ -37,6 +37,6 @@ jobs:
         run: |
           apptainer pull docker://avnirlab/avnirpy:latest
           echo "${{ secrets.SINGULARITY_TOKEN }}" > token
-          apptainer remote login --tokenfile token SylabsCloud
+          apptainer remote login --tokenfile token
           apptainer remote status
           apptainer push -U avnirpy_latest.sif library://avnirlab/avnirpy/avnirpy:latest
