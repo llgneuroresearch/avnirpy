@@ -69,8 +69,10 @@ def test_load_nifti(mock_nib_load):
 def test_get_labels_from_nrrd_header():
     nrrd_header = {
         "Segment1_ID": "Segment_1_ICH",
+        "Segment1_Name": "ICH",
         "Segment1_LabelValue": "1",
         "Segment2_ID": "Segment_2_IVH",
+        "Segment2_Name": "IVH",
         "Segment2_LabelValue": "2",
     }
     expected_labels = {
@@ -99,6 +101,7 @@ def test_get_labels_from_nrrd_header_partial():
     nrrd_header = {
         "Segment1_ID": "Segment_1_ICH",
         "Segment1_LabelValue": "1",
+        "Segment1_Name": "ICH",
     }
     expected_labels = {
         "ICH": 1,

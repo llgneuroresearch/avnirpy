@@ -124,7 +124,7 @@ def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> Tuple[dict, dict]:
         nrrd_header (NRRDHeader): The NRRD header.
 
     Returns:
-        dict: A dictionary mapping the label ID to the label name.
+        dict: A dictionary mapping the label name to the label ID.
         dict: A dictionary mapping the label name to the segment ID.
     """
     label_in_file = {}
@@ -138,6 +138,6 @@ def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> Tuple[dict, dict]:
         label_in_file[nrrd_header[f"{segment}_Name"]] = int(
             nrrd_header[f"{segment}_LabelValue"]
         )
-        segment_match[nrrd_header[key].split("_")[-1]] = segment
+        segment_match[nrrd_header[f"{segment}_Name"]] = segment
 
     return label_in_file, segment_match

@@ -3,9 +3,10 @@
 """
 Quality control of labels in NRRD format from 3DSlicer.
 
-If --output_json is provided, a json file will be created with the QC report and errors will be
-printed in the console. Otherwise, the QC report will be printed in the console and errors will
-stop the script.
+If --output_json is provided, a json file will be created with the QC report. If -v WARNING is used,
+warning messages will be printed in the console if something is wrong with the label file.
+If -v WARNING is not used, the script will stop raising an error if something is wrong with the
+label file.
 
 Change the datatype of the labels and volume files for uint8 and int16 respectively.
 """
@@ -24,8 +25,8 @@ from avnirpy.io.utils import (
     assert_outputs_exist,
     check_segment_extent,
     check_images_space,
-    add_verbose_arg,
 )
+from avnirpy.segmentation.utils import replace_labels_in_file
 
 
 def _build_arg_parser():
@@ -51,7 +52,16 @@ def _build_arg_parser():
     )
 
     add_overwrite_arg(parser)
-    add_verbose_arg(parser)
+    parser.add_argument(
+        "-v",
+        default="NOTSET",
+        const="WARNING",
+        nargs="?",
+        choices=["WARNING"],
+        dest="verbose",
+        help="Produces verbose output depending on "
+        "the provided level. \nDefault when using -v is warning.",
+    )
     return parser
 
 
@@ -59,7 +69,7 @@ def main():
     parser = _build_arg_parser()
     args = parser.parse_args()
     logging.getLogger().setLevel(logging.getLevelName(args.verbose))
-    log_func = logging.warning if args.output_json else parser.error
+    log_func = logging.warning if args.verbose == "WARNING" else parser.error
 
     assert_inputs_exist(parser, [args.input_labels, args.input_volume])
     assert_outputs_exist(
@@ -92,21 +102,18 @@ def main():
         )
 
     # Check if all labels in the file are in the config file
-    print(labels_in_file, labels_in_config)
     for name in labels_in_file.keys():
         if name not in labels_in_config:
             qc_labels = False
             log_func(f"Label {name} not found in the config file.")
 
-    # Replace the labels in the file by the labels in the config file
-    for name, label in labels_in_config.items():
-        if name in labels_in_file and label != labels_in_file[name]:
-            label_data[label_data == labels_in_file[name]] = label
-            label_nrrdhearder[segment_match[label] + "_LabelValue"] = label
-            log_func(
-                f"Label {labels_in_file[label]} has a different name in the config file."
-                "NRRD file modified."
-            )
+    label_data, label_nrrdhearder = replace_labels_in_file(
+        label_data,
+        label_nrrdhearder,
+        labels_in_file,
+        labels_in_config,
+        segment_match,
+    )
 
     # Save the corrected images
     write_nrrd(
