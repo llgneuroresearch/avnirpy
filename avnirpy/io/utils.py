@@ -5,6 +5,8 @@ from argparse import ArgumentParser, Namespace
 from nrrd.types import NRRDHeader
 import numpy as np
 
+from avnirpy.version import __version__
+
 
 def add_verbose_arg(parser: ArgumentParser) -> None:
     """**Imported from Scilpy**
@@ -172,3 +174,17 @@ def check_images_space(vol_header: NRRDHeader, labels_header: NRRDHeader) -> boo
         )
         and vol_header["space"] == labels_header["space"]
     )
+
+
+def add_version_arg(parser: ArgumentParser) -> None:
+    """
+    Adds a version argument to the given argument parser.
+
+    This function adds a '--version' argument to the provided parser, which
+    will display the version of the program when specified.
+
+    Args:
+        parser (argparse.ArgumentParser): The argument parser to which the
+        version argument will be added.
+    """
+    parser.add_argument("--version", action="version", version=__version__)
