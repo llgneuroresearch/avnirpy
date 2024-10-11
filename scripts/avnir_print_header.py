@@ -11,7 +11,7 @@ import os
 import numpy as np
 
 from avnirpy.io.image import load_nrrd, load_nifti
-from avnirpy.io.utils import assert_inputs_exist
+from avnirpy.io.utils import assert_inputs_exist, add_version_arg
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -36,6 +36,8 @@ def _build_arg_parser():
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("input", help="Path to the .nrrd or .nii.gz image.")
+    add_version_arg(parser)
+
     return parser
 
 

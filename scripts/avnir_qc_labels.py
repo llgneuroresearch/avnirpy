@@ -26,7 +26,9 @@ from avnirpy.io.utils import (
     check_segment_extent,
     check_images_space,
 )
+from avnirpy.io.utils import add_version_arg
 from avnirpy.segmentation.utils import replace_labels_in_file
+from avnirpy.version import __version__
 
 
 def _build_arg_parser():
@@ -62,6 +64,7 @@ def _build_arg_parser():
         help="Produces verbose output depending on "
         "the provided level. \nDefault when using -v is warning.",
     )
+    add_version_arg(parser)
     return parser
 
 
