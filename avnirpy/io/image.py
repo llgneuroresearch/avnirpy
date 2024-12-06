@@ -55,6 +55,11 @@ def load_nrrd(
 
     translation = nrrd_header["space origin"]
     rotation = nrrd_header["space directions"]
+    if rotation.shape != (3, 3):
+        rotation = rotation[~np.isnan(rotation).all(axis=1)]
+        if rotation.shape != (3, 3):
+            raise ValueError("Invalid rotation matrix. Not a 3x3 matrix.")
+        nrrd_header["space directions"] = rotation
     affine_nhdr = np.vstack(
         (np.hstack((rotation.T, np.reshape(translation, (3, 1)))), [0, 0, 0, 1])
     )

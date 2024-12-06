@@ -8,7 +8,10 @@ RUN apt update; \
 RUN pip install --upgrade pip
 
 # Install avnirpy
-RUN pip install git+https://github.com/llgneuroresearch/avnirpy.git
+WORKDIR /
+RUN git clone https://github.com/llgneuroresearch/avnirpy
+WORKDIR /avnirpy
+RUN pip install -e .
 
 # Set entrypoint
 ENTRYPOINT [""]
