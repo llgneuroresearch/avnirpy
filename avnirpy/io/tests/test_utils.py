@@ -3,6 +3,7 @@ from unittest.mock import patch
 from argparse import ArgumentParser, Namespace
 
 import numpy as np
+from avnirpy.version import __version__
 
 from avnirpy.io.utils import (
     add_verbose_arg,
@@ -11,6 +12,7 @@ from avnirpy.io.utils import (
     add_overwrite_arg,
     check_images_space,
     check_segment_extent,
+    add_version_arg,
 )
 
 
@@ -230,3 +232,13 @@ def test_check_segment_extent_inconsistent(nrrd_header_inconsistent):
 
 def test_check_segment_extent_no_segments(nrrd_header_no_segments):
     assert check_segment_extent(nrrd_header_no_segments)
+
+
+def test_version_arg(parser, capsys):
+    add_version_arg(parser)
+    with pytest.raises(SystemExit) as excinfo:
+        parser.parse_args(["--version"])
+    assert excinfo.value.code == 0
+
+    captured = capsys.readouterr()
+    assert __version__ == captured.out.strip()
