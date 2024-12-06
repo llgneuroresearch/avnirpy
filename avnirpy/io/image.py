@@ -146,3 +146,24 @@ def get_labels_from_nrrd_header(nrrd_header: NRRDHeader) -> Tuple[dict, dict]:
         segment_match[nrrd_header[f"{segment}_Name"]] = segment
 
     return label_in_file, segment_match
+
+
+def load_image(image: str) -> Tuple[np.ndarray, Nifti1Header, np.ndarray]:
+    """
+    Load an image file.
+
+    Parameters:
+        image (str): The path to the image file.
+
+    Returns:
+        numpy.ndarray: The image data.
+        Nifti1Header: The NIfTI header.
+        numpy.ndarray: The affine transformation matrix.
+    """
+    if image.endswith(".nii") or image.endswith(".nii.gz"):
+        return load_nifti(image)
+    elif image.endswith(".nrrd"):
+        data, nii_header, _, affine = load_nrrd(image)
+        return data, nii_header, affine
+    else:
+        raise ValueError("Invalid image format. Must be NIfTI or NRRD.")

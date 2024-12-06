@@ -3,6 +3,8 @@ from unittest import mock
 import nibabel as nib
 from avnirpy.io.image import axcode_vector, load_nrrd, write_nrrd, load_nifti
 from avnirpy.io.image import get_labels_from_nrrd_header
+import pytest
+from avnirpy.io.image import load_image
 
 
 def test_axcode_transform():
@@ -112,3 +114,43 @@ def test_get_labels_from_nrrd_header_partial():
     result_labels, results_match = get_labels_from_nrrd_header(nrrd_header)
     assert result_labels == expected_labels
     assert results_match == expected_match
+
+
+@mock.patch("avnirpy.io.image.load_nifti")
+def test_load_image_nifti(mock_load_nifti):
+    mock_load_nifti.return_value = (
+        np.zeros((10, 10, 10)),
+        nib.Nifti1Header(),
+        np.eye(4),
+    )
+
+    data, header, affine = load_image("dummy_path.nii")
+
+    assert data.shape == (10, 10, 10)
+    assert isinstance(header, nib.Nifti1Header)
+    assert affine.shape == (4, 4)
+    mock_load_nifti.assert_called_once_with("dummy_path.nii")
+
+
+@mock.patch("avnirpy.io.image.load_nrrd")
+def test_load_image_nrrd(mock_load_nrrd):
+    mock_load_nrrd.return_value = (
+        np.zeros((10, 10, 10)),
+        nib.Nifti1Header(),
+        {},
+        np.eye(4),
+    )
+
+    data, header, affine = load_image("dummy_path.nrrd")
+
+    assert data.shape == (10, 10, 10)
+    assert isinstance(header, nib.Nifti1Header)
+    assert affine.shape == (4, 4)
+    mock_load_nrrd.assert_called_once_with("dummy_path.nrrd")
+
+
+def test_load_image_invalid_format():
+    with pytest.raises(
+        ValueError, match="Invalid image format. Must be NIfTI or NRRD."
+    ):
+        load_image("dummy_path.txt")
