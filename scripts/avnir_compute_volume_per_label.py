@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 
 """
-Quality control of labels in NRRD format from 3DSlicer.
-
-If --output_json is provided, a json file will be created with the QC report. If -v WARNING is used,
-warning messages will be printed in the console if something is wrong with the label file.
-If -v WARNING is not used, the script will stop raising an error if something is wrong with the
-label file.
-
-Change the datatype of the labels and volume files for uint8 and int16 respectively.
+This script computes the volume of each label in a given label image and saves the results in
+a JSON file. Optionally, it can also compute the normalized volume if a brain mask is provided.
 """
 
 import argparse
@@ -59,19 +53,24 @@ def main():
         if zooms != mask_header.get_zooms() or not np.allclose(
             label_header.get_best_affine(), mask_header.get_best_affine()
         ):
-            raise ValueError("Label and brain mask images are in a different sapce.")
+            raise ValueError("Label and brain mask images are in a different space.")
 
     labels_id = np.unique(label_data[label_data != 0])
 
-    volumes = {}
+    volumes = []
     for label_id in labels_id:
-        if label_id not in volumes:
-            volumes[label_id] = {}
-        volumes[label_id]["volume"] = np.sum(label_data == label_id) * np.prod(zooms)
-        if args.brain_mask:
-            volumes[label_id]["volume_normalized"] = (
-                np.sum(label_data == label_id) * np.prod(zooms)
-            ) / np.sum(brain_mask_data)
+        volumes.append(
+            {
+                "label_id": label_id,
+                "volume": np.sum(label_data == label_id) * np.prod(zooms),
+                "volume_normalized": (
+                    (np.sum(label_data == label_id) * np.prod(zooms))
+                    / np.sum(brain_mask_data)
+                    if args.brain_mask
+                    else None
+                ),
+            }
+        )
 
     with open(args.output_json, "w") as file:
         json.dump(volumes, file, indent=4)
