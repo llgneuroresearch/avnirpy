@@ -1,5 +1,6 @@
 nibabel==5.2.*
 numpy==1.23.*
+pandas==2.2.*
 pynrrd==1.0.*
 pytest==8.3.*
 pytest-cov==5.0.*
