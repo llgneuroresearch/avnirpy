@@ -22,24 +22,12 @@ It includes a range of tools primarily designed for CT scans segmentation and an
 	cd avnirpy
 	```
 
-2. **(Optional) Create a Virtual Environment**
-	```sh"
-	python3.11 -m venv venv
-	source venv/bin/activate
- 	```
- 
-	or with conda:
-
-   ```sh
-   conda create -n avnirpy python=3.11
-   conda activate avnirpy
-	```
-
-3. **Install Avnirpy**
+2. **Install Avnirpy**
 
 	```sh
 	pip install -e .
 	```
+
 4. **Run Tests**
 
 	Ensure that the installation is successful by running the tests:
@@ -49,4 +37,3 @@ It includes a range of tools primarily designed for CT scans segmentation and an
 	```
 
 If all tests pass, you have successfully set up the development environment for Avnirpy.
-
