@@ -1,38 +1,37 @@
-import os, re, shutil
+import os
+import shutil
 import argparse
 import logging
-import yaml
 import json
 from glob import glob
-from time import time
-
 
 
 def _get_arg_parser():
     """
-    Build argparser.
+    Build argparse.
     Returns: parser
     """
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", help="Path to the config file", default="config.yaml")
     parser.add_argument("-iv", "--input_directory_volumes", help="Path to the directory containing the volumes")
-    parser.add_argument("-is", "--input_directory_segmentations", help="Path to the directory containing the segmentations")
+    parser.add_argument("-is", "--input_directory_segmentations",
+                        help="Path to the directory containing the segmentations")
     parser.add_argument("-o", "--output_directory", help="Path to the output directory", default="same as input")
     parser.add_argument("-l", "--log_level", help="Level of the logging", default="debug")
 
     return parser
 
+
 def _get_logger(args):
     """
     Get logger
     Args:
-        args: argparser arguments
+        args: argparse arguments
     Returns:
         logger: logger object
     """
     logger = logging.getLogger(__name__)
-    # match the log level in argparser to the logging module
+    # match the log level in argparse to the logging module
     levels = {
         'critical': logging.CRITICAL,
         'error': logging.ERROR,
@@ -60,15 +59,13 @@ def _get_logger(args):
 
     return logger
 
+
 def _json_dump(data, output_file):
     """
     Dump data to a json file
-    Args:
-        data: data to dump
-        output_file: path to the output file
     """
     with open(output_file, "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump(data, f)
 
 
 def get_files(args):
@@ -118,14 +115,14 @@ def get_files_with_extension(vol_list, mask_list):
 def check_number_of_volumes_and_masks(vol_list, mask_list) -> bool:
     """
     Check if the number of volumes and masks match by number and ids
-
+    Expects that the volume and mask file names are the same except for the extension.
     Args:
         vol_list (List[str]): List of volume filepaths.
         mask_list (List[str]): List of mask filepaths.
-        note: expects that the volume and mask file names are the same except for the extension.
+
 
     Returns:
-        bool : True if the number of volumes and masks match, False otherwise.
+        bool : True if the number of volumes and masks match, False otherwise
         list : list of volume ids
         list : list of mask ids
     """
@@ -141,19 +138,16 @@ def check_number_of_volumes_and_masks(vol_list, mask_list) -> bool:
     except IndexError as e:
         print(f'Error: {e}')
 
-
-    print(f"Number of volumes: {len(vol_list)}")
-    print(f"Number of masks: {len(mask_list)}")
     try:
         assert len(vol_list) == len(mask_list)
         number_of_volumes_and_masks_match = True
 
     except AssertionError as e:
         number_of_volumes_and_masks_match = False
-
-    print(f"Number of volumes and masks match: {number_of_volumes_and_masks_match}")
+        print(e)
 
     return number_of_volumes_and_masks_match, vol_ids, mask_ids
+
 
 def check_id_match(vol_list, mask_list):
     vol_ids = {os.path.basename(vol).split('.')[0] for vol in vol_list}
@@ -167,7 +161,7 @@ def check_id_match(vol_list, mask_list):
     else:
         all_ids_match = False
 
-    return  all_ids_match, unmatched_vol, unmatched_mask
+    return all_ids_match, unmatched_vol, unmatched_mask
 
 
 def copy_matched_files_to_output(vol_list, mask_list, unmatched_vol, unmatched_mask, output_dir):
@@ -176,24 +170,25 @@ def copy_matched_files_to_output(vol_list, mask_list, unmatched_vol, unmatched_m
     Args:
         vol_list (List[str]): List of volume filepaths.
         mask_list (List[str]): List of mask filepaths.
-        unmatched_files (List[str]): List of unmatched file ids.
-        output_dir (str): Path to the output directory.
+        unmatched_vol (set): set of unmatched volume ids
+        unmatched_mask (set): set of unmatched mask ids
+        output_dir (str): output directory
     """
 
     output_vol = os.path.join(output_dir, 'final_data', 'vols')
     if not os.path.exists(output_vol):
         os.makedirs(output_vol)
     for vol in vol_list:
-        id = os.path.basename(vol).split('.')[0]
-        if id not in unmatched_vol:
+        id_case = os.path.basename(vol).split('.')[0]
+        if id_case not in unmatched_vol:
             shutil.copy(vol, os.path.join(output_vol, os.path.basename(vol)))
 
     output_mask = os.path.join(output_dir, 'final_data', 'masks')
     if not os.path.exists(output_mask):
         os.makedirs(output_mask)
     for mask in mask_list:
-        id = os.path.basename(mask).split('.')[0]
-        if id not in unmatched_mask:
+        id_case = os.path.basename(mask).split('.')[0]
+        if id_case not in unmatched_mask:
             shutil.copy(mask, os.path.join(output_mask, os.path.basename(mask)))
 
 
@@ -204,10 +199,9 @@ def main():
     logger.info('Starting script')
     logger.info('Reading config file')
 
-
-    #Create output directory
+    # Create output directory
     if args.output_directory == "same as input":
-        args.output_directory= os.path.join(os.path.dirname(args.input_directory_volumes), 'output')
+        args.output_directory = os.path.join(os.path.dirname(args.input_directory_volumes), 'output')
         if not os.path.exists(args.output_directory):
             os.makedirs(args.output_directory)
     logger.info(f'Output directory: {args.output_directory}')
@@ -215,6 +209,7 @@ def main():
     # gets all file in input directories
     vol_list, mask_list = get_files(args)
     logger.info(f'Found {len(vol_list)} volumes and {len(mask_list)} masks')
+
     # get only nifti or nrrd files from the list
     vol_list, mask_list = get_files_with_extension(vol_list, mask_list)
     logger.debug(f'Volume list exemple: {vol_list[0]}')
@@ -233,7 +228,7 @@ def main():
         message += "Writing unmatched files to json. \n"
         message += "The script will ignore the unmatched files and copy the matched files to the output directory"
         logger.warning(message)
-        unmatched_vol = list(unmatched_vol) # convert set to list to be able to dump to json
+        unmatched_vol = list(unmatched_vol)  # convert set to list to be able to dump to json
         unmatched_mask = list(unmatched_mask)
         _json_dump(unmatched_vol, os.path.join(args.output_directory, "unmatched_vol.json"))
         _json_dump(unmatched_mask, os.path.join(args.output_directory, "unmatched_mask.json"))
@@ -242,6 +237,7 @@ def main():
     copy_matched_files_to_output(vol_list, mask_list, unmatched_vol, unmatched_mask, args.output_directory)
     logger.info(f'Moved final dataset to output directory {args.output_directory}')
     logger.info('You can now proceed with avnir_qc_labels to continue the segment level qc check.py')
+
 
 if __name__ == "__main__":
     main()
