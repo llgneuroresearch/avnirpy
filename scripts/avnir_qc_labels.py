@@ -67,6 +67,7 @@ def _build_arg_parser():
     add_version_arg(parser)
     return parser
 
+
 def main():
     parser = _build_arg_parser()
     args = parser.parse_args()
