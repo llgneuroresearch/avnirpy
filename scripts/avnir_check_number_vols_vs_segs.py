@@ -98,14 +98,16 @@ def get_files_with_extension(vol_list, mask_list):
     """
 
     try:
-        vol_list = sorted([vol for vol in vol_list if os.path.basename(vol).split('.')[1] in ["nrrd", "nii"]])
+        vol_list = sorted(
+            [vol for vol in vol_list if os.path.basename(vol).split('.')[1] in ["nrrd", "nii"]])
         print(f'len(vol_list): {len(vol_list)}')
     except IndexError as e:
         print(f'Error: {e}')
         print(f'len(vol_list): {len(vol_list)}')
 
     try:
-        mask_list = sorted([mask for mask in mask_list if os.path.basename(mask).split('.')[1] in ["seg", "nii"]])
+        mask_list = sorted(
+            [mask for mask in mask_list if os.path.basename(mask).split('.')[1] in ["seg", "nii"]])
         print(f'len(mask_list): {len(mask_list)}')
     except IndexError as e:
         print(f'Error: {e}')
@@ -203,7 +205,8 @@ def main():
 
     # Create output directory
     if args.output_directory == "same as input":
-        args.output_directory = os.path.join(os.path.dirname(args.input_directory_volumes), 'output')
+        args.output_directory = os.path.join(
+            os.path.dirname(args.input_directory_volumes), 'output')
         if not os.path.exists(args.output_directory):
             os.makedirs(args.output_directory)
     logger.info(f'Output directory: {args.output_directory}')
@@ -218,9 +221,11 @@ def main():
     logger.debug(f'Mask list exemple: {mask_list[0]}')
 
     # get boolean flags for number of volumes and masks match and all ids match
-    number_of_volumes_and_masks_match, vol_ids, mask_ids = check_number_of_volumes_and_masks(vol_list, mask_list)
+    number_of_volumes_and_masks_match, vol_ids, mask_ids = (
+        check_number_of_volumes_and_masks(vol_list, mask_list))
     if not number_of_volumes_and_masks_match:
-        logger.warning(f"Number of volumes and masks do not match: {len(vol_list)} volumes vs {len(mask_list)} masks!")
+        logger.warning(f"Number of volumes and masks do not match: "
+                       f"{len(vol_list)} volumes vs {len(mask_list)} masks!")
 
     all_ids_match, unmatched_vol, unmatched_mask = check_id_match(vol_ids, mask_ids)
     if not all_ids_match:
@@ -228,7 +233,8 @@ def main():
         message += f"Unmatched volumes: {unmatched_vol} \n"
         message += f"Unmatched masks: {unmatched_mask} \n"
         message += "Writing unmatched files to json. \n"
-        message += "The script will ignore the unmatched files and copy the matched files to the output directory"
+        message += ("The script will ignore the unmatched files and "
+                    "copy the matched files to the output directory")
         logger.warning(message)
         unmatched_vol = list(unmatched_vol)  # convert set to list to be able to dump to json
         unmatched_mask = list(unmatched_mask)
@@ -236,9 +242,11 @@ def main():
         _json_dump(unmatched_mask, os.path.join(args.output_directory, "unmatched_mask.json"))
 
     # copy final dataset to output directory
-    copy_matched_files_to_output(vol_list, mask_list, unmatched_vol, unmatched_mask, args.output_directory)
+    copy_matched_files_to_output(
+        vol_list, mask_list, unmatched_vol, unmatched_mask, args.output_directory)
     logger.info(f'Moved final dataset to output directory {args.output_directory}')
-    logger.info('You can now proceed with avnir_qc_labels to continue the segment level qc check.py')
+    logger.info('You can now proceed with avnir_qc_labels '
+                'to continue the segment level qc check.py')
 
 
 if __name__ == "__main__":
