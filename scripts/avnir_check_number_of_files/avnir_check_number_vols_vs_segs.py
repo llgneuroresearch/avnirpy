@@ -254,7 +254,7 @@ def main():
     # copy final dataset to output directory
     copy_matched_files_to_output(vol_list, mask_list, unmatched_vol, unmatched_mask, args.output_directory)
     logger.info(f'Moved final dataset to output directory {args.output_directory}')
-    logger.info('You can now proceed with avnir_qc_labels.py')
+    logger.info('You can now proceed with avnir_qc_labels to continue the segment level qc check.py')
 
 if __name__ == "__main__":
     main()
