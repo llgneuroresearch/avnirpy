@@ -23,18 +23,6 @@ def _get_arg_parser():
 
     return parser
 
-def _get_config(args):
-    """
-    Read the yaml file and return the config dictionary
-    Args:
-        args: argparser arguments
-    Returns:
-        config: dictionary
-    """
-    with open(args.config, "r") as f:
-        config = yaml.safe_load(f)
-    return config
-
 def _get_logger(args):
     """
     Get logger
@@ -215,8 +203,7 @@ def main():
     logger = _get_logger(args)
     logger.info('Starting script')
     logger.info('Reading config file')
-    config = _get_config(args)
-    logger.debug(f'Config: {config}')
+
 
     #Create output directory
     if args.output_directory == "same as input":
