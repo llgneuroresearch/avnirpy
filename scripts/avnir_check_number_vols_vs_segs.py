@@ -13,10 +13,12 @@ def _get_arg_parser():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", help="Path to the config file", default="config.yaml")
-    parser.add_argument("-iv", "--input_directory_volumes", help="Path to the directory containing the volumes")
+    parser.add_argument("-iv", "--input_directory_volumes",
+                        help="Path to the directory containing the volumes")
     parser.add_argument("-is", "--input_directory_segmentations",
                         help="Path to the directory containing the segmentations")
-    parser.add_argument("-o", "--output_directory", help="Path to the output directory", default="same as input")
+    parser.add_argument("-o", "--output_directory", help="Path to the output directory",
+                        default="same as input")
     parser.add_argument("-l", "--log_level", help="Level of the logging", default="debug")
 
     return parser
