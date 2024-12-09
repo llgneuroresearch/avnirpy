@@ -45,7 +45,7 @@ def _get_logger(args):
     logger.setLevel(level)
 
     # create file handler which logs even debug messages
-    fh = logging.FileHandler('checking_nb_files.log')
+    fh = logging.FileHandler('avnir_check_number_of_files/checking_nb_files.log')
     fh.setLevel(level)
     # create console handler with a higher log level
     ch = logging.StreamHandler()

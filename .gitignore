@@ -71,3 +71,6 @@ target/
 
 # Virtualenv
 venv/
+
+# Local test files
+/scripts/avnir_check_number_of_files
