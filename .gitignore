@@ -74,3 +74,4 @@ venv/
 
 # Local test files
 /scripts/avnir_check_number_of_files
+scripts/avnir_check_number_vols_vs_segs.sh
