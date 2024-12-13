@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-This script computes the volume (in ml) of each label in a given label image and saves the results in
-a JSON file. Optionally, it can also compute the normalized volume if a brain mask is provided.
+This script computes the volume (in ml) of each label in a given label image and saves the results
+in a JSON file. Optionally, it can also compute the normalized volume if a brain mask is provided.
 """
 
 import argparse
