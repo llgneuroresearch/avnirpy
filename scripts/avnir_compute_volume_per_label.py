@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This script computes the volume of each label in a given label image and saves the results in
+This script computes the volume (in ml) of each label in a given label image and saves the results in
 a JSON file. Optionally, it can also compute the normalized volume if a brain mask is provided.
 """
 
@@ -29,7 +29,9 @@ def _build_arg_parser():
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("input_labels", help="Path to the .nii.gz/.nrrd label image.")
-    parser.add_argument("output_json", help="Path to the json file containing volumes.")
+    parser.add_argument(
+        "output_json", help="Path to the json file containing volumes in ml."
+    )
 
     parser.add_argument("--brain_mask", help="Path to the .nii.gz/.nrrd brain mask.")
 
@@ -62,9 +64,9 @@ def main():
         volumes.append(
             {
                 "label_id": label_id,
-                "volume": np.sum(label_data == label_id) * np.prod(zooms),
+                "volume": np.sum(label_data == label_id) * np.prod(zooms) / 1000,
                 "volume_normalized": (
-                    (np.sum(label_data == label_id) * np.prod(zooms))
+                    ((np.sum(label_data == label_id) * np.prod(zooms)) / 1000)
                     / np.sum(brain_mask_data)
                     if args.brain_mask
                     else None
