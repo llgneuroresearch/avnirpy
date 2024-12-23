@@ -199,18 +199,18 @@ def test_different_space(vol_header, labels_header):
 @pytest.fixture
 def nrrd_header_consistent():
     return {
-        "Segment1_Extend": "value1",
-        "Segment2_Extend": "value1",
-        "Segment3_Extend": "value1",
+        "Segment1_Extent": "value1",
+        "Segment2_Extent": "value1",
+        "Segment3_Extent": "value1",
     }
 
 
 @pytest.fixture
 def nrrd_header_inconsistent():
     return {
-        "Segment1_Extend": "value1",
-        "Segment2_Extend": "value2",
-        "Segment3_Extend": "value1",
+        "Segment1_Extent": "value1",
+        "Segment2_Extent": "value2",
+        "Segment3_Extent": "value1",
     }
 
 
