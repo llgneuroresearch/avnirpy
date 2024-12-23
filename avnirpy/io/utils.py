@@ -146,12 +146,12 @@ def check_segment_extent(nrrd_header: NRRDHeader) -> bool:
     Returns:
         bool: True if all segment extent values are consistent, False otherwise.
     """
-    extend = ""
+    extent = ""
     for key in nrrd_header:
-        if "Segment" in key and "_Extend" in key:
-            if extend == "":
-                extend = nrrd_header[key]
-            elif extend != nrrd_header[key]:
+        if "Segment" in key and "_Extent" in key:
+            if extent == "":
+                extent = nrrd_header[key]
+            elif extent != nrrd_header[key]:
                 return False
     return True
 
