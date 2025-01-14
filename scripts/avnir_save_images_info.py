@@ -5,11 +5,8 @@ Save images information in a .csv file.
 """
 
 import argparse
-import json
 import os
-import csv
 
-import numpy as np
 import pandas as pd
 
 from avnirpy.io.image import load_nrrd, load_nifti
