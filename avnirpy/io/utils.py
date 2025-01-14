@@ -1,3 +1,4 @@
+import importlib.metadata
 import os
 from typing import Union, List
 
@@ -5,7 +6,7 @@ from argparse import ArgumentParser, Namespace
 from nrrd.types import NRRDHeader
 import numpy as np
 
-from avnirpy.version import __version__
+__version__ = importlib.metadata.version("avnirpy")
 
 
 def add_verbose_arg(parser: ArgumentParser) -> None:

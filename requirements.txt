@@ -1,5 +1,7 @@
+MetricsReloaded @ git+https://github.com/Project-MONAI/MetricsReloaded@monai-support
+monai==1.4.*
 nibabel==5.2.*
-numpy==1.23.*
+numpy==1.26.*
 pandas==2.2.*
 pynrrd==1.0.*
 pytest==8.3.*
