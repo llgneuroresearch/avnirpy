@@ -33,6 +33,7 @@ def assert_inputs_exist(
     parser: ArgumentParser,
     required: Union[str, List[str]],
     optional: Union[str, List[str]] = None,
+    is_directory: bool = False,
 ) -> None:
     """**Imported from Scilpy**
     Assert that all inputs exist. If not, print parser's usage and exit.
@@ -41,6 +42,7 @@ def assert_inputs_exist(
         parser (ArgumentParser): Parser.
         required (Union[str, List[str]]): Required paths to be checked.
         optional (Union[str, List[str]], optional): Optional paths to be checked. Defaults to None.
+        is_directory (bool, optional): Check if the input is a directory. Defaults to False.
     """
 
     def _check(path: str):
@@ -49,8 +51,13 @@ def assert_inputs_exist(
         Args:
             path (str): filename
         """
-        if not os.path.isfile(path):
+        if not os.path.isfile(path) and not is_directory:
             parser.error("Input file {} does not exist".format(path))
+
+        if is_directory:
+            path_dir = os.path.dirname(path)
+            if path_dir and not os.path.isdir(path_dir):
+                parser.error("Directory {}/ does not exist.".format(path_dir))
 
     if isinstance(required, str):
         required = [required]
