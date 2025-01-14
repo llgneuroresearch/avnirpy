@@ -21,13 +21,6 @@ from avnirpy.io.utils import (
 )
 
 
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return super().default(obj)
-
-
 def has_nii_gz_extension(filename):
     base, ext = os.path.splitext(filename)
     return ext == ".gz" and os.path.splitext(base)[1] == ".nii"
