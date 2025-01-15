@@ -57,6 +57,18 @@ def test_all_files_exist(mock_isfile, parser):
     # No exception should be raised
 
 
+@patch("os.path.isdir", side_effect=[True, True])
+def test_all_directories_exist(mock_isdirectory, parser):
+    assert_inputs_exist(parser, ["dir1/", "dir2/"], is_directory=True)
+    # No exception should be raised
+
+
+@patch("os.path.isdir", side_effect=[True, False])
+def test_directories_does_not_exist(mock_isdirectory, parser):
+    with pytest.raises(SystemExit):
+        assert_inputs_exist(parser, ["dir1/", "dir2/"], is_directory=True)
+
+
 @patch("os.path.isfile", return_value=False)
 def test_required_file_does_not_exist(mock_isfile, parser):
     with pytest.raises(SystemExit):

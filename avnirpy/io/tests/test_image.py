@@ -35,6 +35,46 @@ def test_load_nrrd(mock_aff2axcodes, mock_nrrd_read):
     assert affine.shape == (4, 4)
 
 
+@mock.patch("nrrd.read")
+@mock.patch("nibabel.orientations.aff2axcodes")
+def test_load_nrrd_wrong_affine(mock_aff2axcodes, mock_nrrd_read):
+    with pytest.raises(ValueError):
+        mock_nrrd_read.return_value = (
+            np.zeros((10, 10, 10)),
+            {
+                "space origin": [0, 0, 0],
+                "space directions": np.eye(4),
+                "space": "left-posterior-superior",
+            },
+        )
+        mock_aff2axcodes.return_value = ["R", "A", "S"]
+
+        load_nrrd("dummy_path")
+
+
+@mock.patch("nrrd.read")
+@mock.patch("nibabel.orientations.aff2axcodes")
+def test_load_nrrd_nan_affine(mock_aff2axcodes, mock_nrrd_read):
+    affine = np.eye(4, 3)
+    affine[3, :] = np.nan
+    mock_nrrd_read.return_value = (
+        np.zeros((10, 10, 10)),
+        {
+            "space origin": [0, 0, 0],
+            "space directions": affine,
+            "space": "left-posterior-superior",
+        },
+    )
+    mock_aff2axcodes.return_value = ["R", "A", "S"]
+
+    data, nii_header, nrdd_header, affine = load_nrrd("dummy_path")
+
+    assert data.shape == (10, 10, 10)
+    assert isinstance(nii_header, nib.Nifti1Header)
+    assert isinstance(nrdd_header, dict)
+    assert affine.shape == (4, 4)
+
+
 @mock.patch("nrrd.write")
 @mock.patch("nibabel.orientations.aff2axcodes")
 def test_write_nrrd(mock_aff2axcodes, mock_nrrd_write):
