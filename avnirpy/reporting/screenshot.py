@@ -222,7 +222,11 @@ def screenshot_mosaic(
     if data.ndim < 4:
         img = Image.fromarray(mosaic)
         draw = ImageDraw.Draw(img)
-        fnt = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 40)
+        try:
+            font_path = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+            fnt = ImageFont.truetype(font_path, 40)
+        except OSError:
+            fnt = ImageFont.load_default()
         draw.text([mosaic.shape[1] / 2, 0], "A", fill=255, font=fnt)
         draw.text([mosaic.shape[1] / 2, mosaic.shape[0] - 40], "P", fill=255, font=fnt)
         draw.text([0, mosaic.shape[0] / 2], "L", fill=255, font=fnt)
