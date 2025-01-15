@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cerebral Volumetry Analysis Report</title>
+    <style>
+        @page {
+            size: letter;
+            margin-left: 0;
+            margin-right: 0;
+            background-color: #f4f4f9 !important;
+            @top-center {
+                content: "CHUM Research Center";
+            }
+            @bottom-center {
+                content: "{{patient_name}} {{patient_id}}";
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: small;
+            margin: 0in;
+            padding: 0in;
+            color: rgb(51, 51, 51);
+        }
+        .page {
+            padding-left: 1in;
+            padding-right: 1in;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-bottom: 2px solid #ccc;
+        }
+        .header img {
+            max-width: 150px;
+            height: auto;
+            margin-right: 20px;
+        }
+        .header h1 {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+            color: rgb(0, 64, 113);
+        }
+        .patient-info {
+            margin: 20px 0;
+            background-color: #ffffff;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .screenshot {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .screenshot img {
+            max-height: 200px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: rgb(114, 191, 68);
+            color: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            width: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <img src="https://www.chumontreal.qc.ca/sites/default/files/logos/logo_crchum_versionlongue_sans_fond.png" alt="Logo CRCHUM">
+            <h1>Stroke Analysis Report</h1>
+        </div>
+
+        <div class="patient-info">
+            <p><strong>Patient Name:</strong> {{patient_name}} <span style="float: right;"><strong>Date:</strong> {{date}}</span></p>
+            <p><strong>Patient ID:</strong> {{patient_id}}</p>
+        </div>
+
+        <div class="screenshot">
+            <p><strong>Brain Image:</strong></p>
+            <img src="file://{{screenshot}}" alt="Brain screenshot" style="max-width:100%; height:auto; border:1px solid black;">
+        </div>
+
+        <div class="analysis-table">
+            <h2>Stroke Region Volumes</h2>
+            <table>
+            <thead>
+                <tr>
+                <th>Region</th>
+                <th>Volume (ml)</th>
+                <th>Normalized Volume</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set classes = ({1: "ICH", 2: "IVH", 3: "PHE"}) %}
+                {% for region in volumetry %}
+                <tr>
+                <td>{{ classes[region["label_id"]|int] }} ({{ COLOR[region["label_id"]|int] }})</td>
+                <td>{{ region["volume"]|round(1) }}</td>
+                <td>{{ region["volume_normalized"]|round(1) if region["volume_normalized"] is not none else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        <div class="disclaimer">
+            <h2>Medical Disclaimer</h2>
+            <p>All content found in this document, including: text, images, audio, or other formats were created for informational
+                purposes only. The content is not intended to be a substitute for professional medical advice, diagnosis, or treatment.
+                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a
+                medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read
+                in this document.
+                <br>This document does not recommend or endorse any specific tests, physicians, products, procedures, opinions, or other
+                information that may be mentioned herein. Reliance on any information provided in this document is solely at your own risk.</p>
+        </div>
+    </div>
+</body>
+</html>
