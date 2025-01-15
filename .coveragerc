@@ -9,6 +9,7 @@ omit =
     avnirpy/version.py
     setup.py
     avnirpy/**/tests/*.py
+    avnirpy/scripts/*.py
 
 [report]
 skip_empty = True
