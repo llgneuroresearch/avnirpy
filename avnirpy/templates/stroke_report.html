@@ -106,7 +106,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% set classes = ({1: "ICH", 2: "IVH", 3: "PHE"}) %}
+                {% set classes = ({1: "EDH", 2: "IPH", 3: "IVH", 4: "SAH", 5: "SDH""}) %}
                 {% for region in volumetry %}
                 <tr>
                 <td>{{ classes[region["label_id"]|int] }} ({{ COLOR[region["label_id"]|int] }})</td>

@@ -19,7 +19,6 @@ from avnirpy.io.utils import (
 )
 from avnirpy.reporting.report import StrokeReport
 from avnirpy.reporting.screenshot import (
-    screenshot_mosaic_wrapper,
     screenshot_mosaic_blend,
 )
 
