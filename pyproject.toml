@@ -28,6 +28,7 @@ dependencies = [
 "nibabel==5.2.*",
 "numpy==1.26.*",
 "pandas==2.2.*",
+"pillow==11.1.*",
 "pynrrd==1.0.*",
 "pytest==8.3.*",
 "pytest-cov==5.0.*",
@@ -35,18 +36,20 @@ dependencies = [
 "pytest-metadata==3.1.*",
 "pytest-console-scripts==1.4.*",
 "pytest-html==4.1.*",
-"pyyaml==6.0.*"
+"pyyaml==6.0.*",
+"weasyprint==63.1"
 ]
 
 [project.scripts]
 avnir_compute_segmentation_stats = "avnirpy.scripts.avnir_compute_segmentation_stats:main"
-avnir_compute_volume_per_label = "scripts.avnir_compute_volume_per_label:main"
-avnir_json_to_csv = "scripts.avnir_json_to_csv:main"
-avnir_nifti_to_nrrd = "scripts.avnir_nifti_to_nrrd:main"
-avnir_nrrd_to_nifti = "scripts.avnir_nrrd_to_nifti:main"
-avnir_print_header = "scripts.avnir_print_header:main"
-avnir_qc_labels = "scripts.avnir_qc_labels:main"
-avnir_save_images_info = "scripts.avnir_save_images_info:main"
+avnir_compute_volume_per_label = "avnirpy.scripts.avnir_compute_volume_per_label:main"
+avnir_create_stroke_report = "avnirpy.scripts.avnir_create_stroke_report:main"
+avnir_json_to_csv = "avnirpy.scripts.avnir_json_to_csv:main"
+avnir_nifti_to_nrrd = "avnirpy.scripts.avnir_nifti_to_nrrd:main"
+avnir_nrrd_to_nifti = "avnirpy.scripts.avnir_nrrd_to_nifti:main"
+avnir_print_header = "avnirpy.scripts.avnir_print_header:main"
+avnir_qc_labels = "avnirpy.scripts.avnir_qc_labels:main"
+avnir_save_images_info = "avnirpy.scripts.avnir_save_images_info:main"
 
 [project.urls]
     Homepage = "https://github.com/llgneuroresearch/avnirpy"
