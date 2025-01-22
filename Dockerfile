@@ -2,7 +2,7 @@ FROM python:3.10.15-slim-bullseye
 
 # Install dependencies
 RUN apt update; \
-    apt install -y git jq
+    apt install -y git jq weasyprint
 
 # Upgrade pip
 RUN pip install --upgrade pip
