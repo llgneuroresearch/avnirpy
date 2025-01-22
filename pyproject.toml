@@ -27,6 +27,9 @@ dependencies = [
 "monai==1.4.*",
 "nibabel==5.2.*",
 "numpy==1.26.*",
+"nnunetv2==2.5.*",
+"onnxruntime==1.20.*",
+"onnxscript==0.1.*",
 "pandas==2.2.*",
 "pynrrd==1.0.*",
 "pytest==8.3.*",
@@ -40,13 +43,15 @@ dependencies = [
 
 [project.scripts]
 avnir_compute_segmentation_stats = "avnirpy.scripts.avnir_compute_segmentation_stats:main"
-avnir_compute_volume_per_label = "scripts.avnir_compute_volume_per_label:main"
-avnir_json_to_csv = "scripts.avnir_json_to_csv:main"
-avnir_nifti_to_nrrd = "scripts.avnir_nifti_to_nrrd:main"
-avnir_nrrd_to_nifti = "scripts.avnir_nrrd_to_nifti:main"
-avnir_print_header = "scripts.avnir_print_header:main"
-avnir_qc_labels = "scripts.avnir_qc_labels:main"
-avnir_save_images_info = "scripts.avnir_save_images_info:main"
+avnir_compute_volume_per_label = "avnirpy.scripts.avnir_compute_volume_per_label:main"
+avnir_convert_nnunet_to_onnx = "avnirpy.scripts.avnir_convert_nnunet_to_onnx:main"
+avnir_json_to_csv = "avnirpy.scripts.avnir_json_to_csv:main"
+avnir_nifti_to_nrrd = "avnirpy.scripts.avnir_nifti_to_nrrd:main"
+avnir_nrrd_to_nifti = "avnirpy.scripts.avnir_nrrd_to_nifti:main"
+avnir_predict_nnunet_onnx = "avnirpy.scripts.avnir_predict_nnunet_onnx:main"
+avnir_print_header = "avnirpy.scripts.avnir_print_header:main"
+avnir_qc_labels = "avnirpy.scripts.avnir_qc_labels:main"
+avnir_save_images_info = "avnirpy.scripts.avnir_save_images_info:main"
 
 [project.urls]
     Homepage = "https://github.com/llgneuroresearch/avnirpy"
