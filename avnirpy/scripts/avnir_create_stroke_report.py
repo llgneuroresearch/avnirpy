@@ -60,6 +60,7 @@ def main():
 
     with open(args.input_volumetry, "r") as file:
         volumetry_data = json.load(file)
+        volumetry_data = sorted(volumetry_data, key=lambda x: x["volume"], reverse=True)
 
     report = StrokeReport(
         args.patient_name, args.patient_id, datetime.now().strftime("%d-%m-%Y")
