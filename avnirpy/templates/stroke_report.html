@@ -102,7 +102,7 @@
                 <tr>
                 <th>Region</th>
                 <th>Volume (ml)</th>
-                <th>Normalized Volume</th>
+                <th>Normalized Volume (&times;10<sup>-5</sup>)</th>
                 </tr>
             </thead>
             <tbody>
@@ -111,7 +111,7 @@
                 <tr>
                 <td>{{ classes[region["label_id"]|int] }} ({{ COLOR[region["label_id"]|int] }})</td>
                 <td>{{ region["volume"]|round(1) }}</td>
-                <td>{{ region["volume_normalized"]|round(1) if region["volume_normalized"] is not none else 'N/A' }}</td>
+                <td>{{ "%.01f" | format(region["volume_normalized"] * 0.00001) if region["volume_normalized"] is not none else 'N/A' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
