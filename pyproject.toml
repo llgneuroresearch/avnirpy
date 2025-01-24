@@ -59,3 +59,8 @@ dev = ["pytest", "black"]
 
 [tool.setuptools]
 py-modules = ["avnirpy"]
+
+[tool.hatch.build]
+include = [
+  "/avnirpy/templates/*.html",
+]
