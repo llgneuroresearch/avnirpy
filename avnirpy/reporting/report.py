@@ -1,7 +1,10 @@
-from jinja2 import Environment, PackageLoader
-from weasyprint import HTML
-import tempfile
+from os.path import abspath, dirname, join
 import shutil
+import tempfile
+
+
+from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML
 
 
 class Report:
@@ -23,7 +26,9 @@ class Report:
             html_content (str or None): The HTML content of the report, initially set to None.
             temp_dir (str): The path to a temporary directory for storing files.
         """
-        self.env = Environment(loader=PackageLoader("avnirpy", "templates"))
+        self.env = Environment(
+            loader=FileSystemLoader(abspath(join(dirname(__file__), "../templates")))
+        )
         self.patient_name = patient_name
         self.patient_id = patient_id
         self.date = date
