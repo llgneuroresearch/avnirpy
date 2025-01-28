@@ -53,7 +53,7 @@ def main():
     if args.brain_mask:
         brain_mask_data, mask_header, _ = load_image(args.brain_mask)
         if zooms != mask_header.get_zooms() or not np.allclose(
-            label_header.get_best_affine(), mask_header.get_best_affine()
+            label_header.get_best_affine(), mask_header.get_best_affine(), atol=1.0e-5
         ):
             raise ValueError("Label and brain mask images are in a different space.")
 
