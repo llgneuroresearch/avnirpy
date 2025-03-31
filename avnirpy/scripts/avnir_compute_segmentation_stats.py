@@ -1,7 +1,22 @@
 #!/usr/bin/env python3
 
 """
-Save images information in a .csv file.
+Script to compute segmentation statistics between ground truth and predicted segmentations.
+
+This script compares segmentation results stored in two directories: one containing 
+the ground truth segmentations and the other containing the predicted segmentations. 
+It calculates various statistical measures for each segmentation pair using the 
+`MetricsReloaded` (https://metrics-reloaded.dkfz.de/metric-library)
+library and outputs the results in a CSV file. Optionally, it can 
+also compute statistics for individual labels in a multi-label segmentation scenario.
+
+Example:
+
+    avnir_compute_segmentation_stats \\
+    /path/to/ground_truth \\
+    /path/to/predictions \\
+    /path/to/output.csv \\
+    --multilabel --verbose
 """
 
 import argparse
