@@ -10,6 +10,7 @@ import os
 
 from MetricsReloaded.metrics.pairwise_measures import BinaryPairwiseMeasures as BPM
 import pandas as pd
+import numpy as np
 
 from avnirpy.io.image import load_nifti
 from avnirpy.io.utils import (
@@ -38,6 +39,10 @@ def _build_arg_parser():
         help="Directory containing the predicted segmentations.",
     )
     parser.add_argument("output", help="Path to the .csv statistical report.")
+
+    parser.add_argument(
+        "--multilabel", action="store_true", help="Use multi-label mode."
+    )
 
     add_overwrite_arg(parser)
     add_verbose_arg(parser)
@@ -71,14 +76,45 @@ def main():
         bpm = BPM(prediction, reference, measures=None)
         dict_seg = bpm.to_dict_meas()
         dict_seg["image"] = i
+        dict_seg["label"] = "all"
         data.append(dict_seg)
 
+        if args.multilabel:
+            labels = np.unique(reference)
+            for label in labels:
+                if label == 0:
+                    continue
+                prediction_label = (prediction == label).astype(int)
+                reference_label = (reference == label).astype(int)
+                bpm = BPM(prediction_label, reference_label, measures=None)
+                dict_seg = bpm.to_dict_meas()
+                dict_seg["image"] = i
+                dict_seg["label"] = label
+                data.append(dict_seg)
+
     df = pd.DataFrame(data)
-    image = df["image"]
-    df.drop(labels=["image"], axis=1, inplace=True)
-    df.insert(0, "image", image)
-    df.to_csv(args.output, index=False)
-    df.describe().to_csv(args.output.replace(".csv", "_summary.csv"), index=False)
+    df = df[
+        ["image", "label"]
+        + [col for col in df.columns if col not in ["image", "label"]]
+    ]
+    if args.multilabel:
+        df_labels = df[df["label"] != "all"]
+        df_labels.to_csv(
+            args.output.replace(".csv", "_multilabel.csv"),
+            index=False,
+        )
+        df_labels.describe().to_csv(
+            args.output.replace(".csv", "_multilabel_summary.csv"), index=True
+        )
+
+        df_all = df[df["label"] == "all"]
+        df_all.to_csv(args.output.replace(".csv", "_all.csv"), index=False)
+        df_all.describe().to_csv(
+            args.output.replace(".csv", "_all_summary.csv"), index=True
+        )
+    else:
+        df.to_csv(args.output, index=False)
+        df.describe().to_csv(args.output.replace(".csv", "_summary.csv"), index=True)
 
 
 if __name__ == "__main__":
