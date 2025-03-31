@@ -65,9 +65,8 @@ def main():
             {
                 "label_id": label_id,
                 "volume": np.sum(label_data == label_id) * np.prod(zooms) / 1000,
-                "volume_normalized": (
-                    ((np.sum(label_data == label_id) * np.prod(zooms)) / 1000)
-                    / np.sum(brain_mask_data)
+                "volume_icv": (
+                    (np.sum(label_data == label_id) / np.sum(brain_mask_data)) * 100
                     if args.brain_mask
                     else None
                 ),

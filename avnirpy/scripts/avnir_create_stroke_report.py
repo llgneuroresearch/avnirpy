@@ -71,7 +71,7 @@ def main():
         args.input_labels,
         min_val=0,
         max_val=140,
-        nb_columns=5,
+        nb_columns=7,
         offset_percent=0.3,
         blend_val=0.3,
         output_prefix="labels",

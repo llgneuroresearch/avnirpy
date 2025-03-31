@@ -66,7 +66,7 @@ def screenshot_mosaic_wrapper(
     """
     data = nib.load(filename).get_fdata()
     offset = round(data.shape[2] * offset_percent)
-    skip = round((data.shape[2] - 2 * offset) / nb_columns)
+    skip = round((data.shape[2] - 2 * offset) / (nb_columns + 1))
     data = np.nan_to_num(data)
 
     output_prefix = output_prefix.replace(" ", "_") + "_"

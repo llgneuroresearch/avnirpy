@@ -109,9 +109,12 @@
                 {% set classes = ({1: "EDH", 2: "IPH", 3: "IVH", 4: "SAH", 5: "SDH"}) %}
                 {% for region in volumetry %}
                 <tr>
-                <td>{{ classes[region["label_id"]|int] }} ({{ COLOR[region["label_id"]|int] }})</td>
+                <td>
+                    {{ classes[region["label_id"]|int] }}
+                    <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ COLOR[region["label_id"]|int] }}; margin-left: 5px;"></span>
+                </td>
                 <td>{{ "%.01f" | format(region["volume"]) }}</td>
-                <td>{{ "%.01f" | format(1000000 * region["volume_normalized"]) if region["volume_normalized"] is not none else 'N/A' }}</td>
+                <td>{{ "%.01f" | format(1000000 * region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

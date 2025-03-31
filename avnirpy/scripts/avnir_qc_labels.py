@@ -92,7 +92,6 @@ def main():
     if not qc_space:
         log_func("The space of the labels and volume images is different.")
 
-    qc_labels = True
     labels_in_file, segment_match = get_labels_from_nrrd_header(label_nrrdhearder)
     labels_in_config = {
         label["name"]: int(label["value"]) for label in config["labels"]
@@ -105,10 +104,22 @@ def main():
         )
 
     # Check if all labels in the file are in the config file
-    for name in labels_in_file.keys():
-        if name not in labels_in_config:
-            qc_labels = False
-            log_func(f"Label {name} not found in the config file.")
+    # If the label in the file does not have the same name as the label in the config file,
+    # the label in the file will be replaced by the label in the config file.
+    for name_f in labels_in_file.keys():
+        qc_labels = False
+        for name_c in labels_in_config.keys():
+            if str(name_c).lower() in str(name_f).lower():
+                segment_match[name_c] = segment_match[name_f]
+                del segment_match[name_f]
+                label_nrrdhearder = {
+                    key: name_c if str(value) == name_f else value
+                    for key, value in label_nrrdhearder.items()
+                }
+                qc_labels = True
+                break
+        if not qc_labels:
+            log_func(f"Label {name_f} not found in the config file.")
 
     label_data, label_nrrdhearder = replace_labels_in_file(
         label_data,
