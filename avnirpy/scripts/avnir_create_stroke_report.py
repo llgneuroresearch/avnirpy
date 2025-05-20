@@ -107,13 +107,13 @@ def main():
         # Get previous timepoint data
         previous_df = timepoint_df.loc[
             timepoint_df.groupby("label_name")["date"].idxmax()
-        ]
+        ]s
 
         # Calculate differences
         for label in labels:
             compute_diff_perc(current_df, previous_df, "volume", label)
-            if "volume_normalized" in current_df.columns:
-                compute_diff_perc(current_df, previous_df, "volume_normalized", label)
+            if "volume_icv" in current_df.columns:
+                compute_diff_perc(current_df, previous_df, "volume_icv", label)
 
         # Generate timepoint graphs
         all_timepoint_df = pd.concat([timepoint_df, current_df], ignore_index=True)
@@ -176,9 +176,9 @@ def main():
                 "last_volume",
                 "diff_volume",
                 "diff_perc_volume",
-                "last_volume_normalized",
-                "diff_volume_normalized",
-                "diff_perc_volume_normalized",
+                "last_volume_icv",
+                "diff_volume_icv",
+                "diff_perc_volume_icv",
             ],
             errors="ignore",
         ).to_json(
