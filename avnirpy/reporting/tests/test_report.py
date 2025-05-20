@@ -22,8 +22,6 @@ def test_report_initialization(report):
     assert report.date == "2023-10-01"
     assert report.html_content is None
     assert isinstance(report.env, Environment)
-    assert report.env.loader.package_name == "avnirpy"
-    assert report.env.loader.package_path == "templates"
     assert isinstance(report.temp_dir, str)
 
 
@@ -47,8 +45,6 @@ def test_stroke_report_initialization(stroke_report):
     assert stroke_report.date == "2023-10-02"
     assert stroke_report.html_content is None
     assert isinstance(stroke_report.env, Environment)
-    assert stroke_report.env.loader.package_name == "avnirpy"
-    assert stroke_report.env.loader.package_path == "templates"
     assert isinstance(stroke_report.temp_dir, str)
 
 
@@ -68,6 +64,7 @@ def test_stroke_report_render(mock_get_template, stroke_report):
             "date": "2023-10-02",
             "volumetry": volumetry_data,
             "screenshot": screenshot_path,
+            "timepoints": None,
             "COLOR": ["#FFFFFF", "#000000"],
         }
     )

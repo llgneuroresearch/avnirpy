@@ -57,7 +57,7 @@
             margin-bottom: 20px;
         }
         .screenshot img {
-            max-height: 200px;
+            max-height: 600px;
         }
         table {
             width: 100%;
@@ -75,7 +75,13 @@
         th, td {
             padding: 10px;
             text-align: center;
-            width: 30%;
+            width: 30%
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        td:nth-child(1) {
+            text-align: left;
         }
     </style>
 </head>
@@ -92,7 +98,7 @@
         </div>
 
         <div class="screenshot">
-            <img src="file://{{screenshot}}" alt="Brain screenshot" style="max-width:100%; height:auto; border:1px solid black;">
+            <img src="file://{{screenshot}}" alt="Brain screenshot" style="max-width:100%; border:1px solid black;">
         </div>
 
         <div class="analysis-table">
@@ -100,26 +106,67 @@
             <table>
             <thead>
                 <tr>
-                <th>Region</th>
-                <th>Volume (ml)</th>
-                <th>Normalized Volume (&times;10<sup>-8</sup>)</th>
+                <th style="width: 10%">Region</th>
+                {% if timepoints %}
+                    <th style="width: 10%">Change*</th>
+                {% endif %}
+                <th>Volume in ml</th>
+                <th>% of ICV**</th>
                 </tr>
             </thead>
             <tbody>
                 {% set classes = ({1: "EDH", 2: "IPH", 3: "IVH", 4: "SAH", 5: "SDH"}) %}
                 {% for region in volumetry %}
                 <tr>
-                <td>
-                    {{ classes[region["label_id"]|int] }}
+                <td style="width: 10%">
                     <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ COLOR[region["label_id"]|int] }}; margin-left: 5px;"></span>
+                    {{ region["label_name"] }}
                 </td>
-                <td>{{ "%.01f" | format(region["volume"]) }}</td>
-                <td>{{ "%.01f" | format(1000000 * region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}</td>
+                {% if timepoints %}
+                    <td style="width: 10%; font-size: medium;">
+                        {% if region["diff_perc_volume"] > 5 %}
+                            <span style="color: green;">&#9650;</span>
+                        {% elif region["diff_perc_volume"] < -5 %}
+                            <span style="color: red;">&#9660;</span>
+                        {% else %}
+                            <span style="color: gray;">&#8771;</span>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td>
+                    {{ "%.01f" | format(region["volume"]) }}
+                    {% if "diff_volume" in region %}
+                        ({{ "%.03f" | format(region["diff_volume"]) }})
+                    {% endif %}
+                </td>
+                <td>
+                    {{ "%.01f" | format(1000000 * region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}
+                    {% if "diff_volume_icv" in region %}
+                        ({{ "%.03f" | format(region["diff_volume_icv"]) }})
+                    {% endif %}
+                </td>
                 </tr>
                 {% endfor %}
             </tbody>
             </table>
+            {% if timepoints %}
+                <p style="font-size: 0.8em; color: #666;">*Change in volume between the first and last timepoint. A change of more than 5% is considered significant.</p>
+            {% endif %}
+            <p style="font-size: 0.8em; color: #666;">**ICV = Intracranial Volume</p>
         </div>
+
+        {% if timepoints %}
+        <div class="longitudinal-analysis">
+            <h2>Longitudinal Analysis</h2>
+            <div class="graphs-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for timepoint in timepoints %}
+                <div class="graph" style="flex: 1; min-width: 50%; max-width: 50%; box-sizing: border-box;">
+                    <img src="file://{{ timepoint }}" alt="Timepoint Graph" style="max-width: 100%; height: auto;">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         <div class="disclaimer">
             <h2>Medical Disclaimer</h2>
             <p>All content found in this document, including: text, images, audio, or other formats were created for informational

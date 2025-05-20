@@ -7,11 +7,11 @@ import numpy as np
 colors = {
     "blue": (0.0, 0.0, 1.0),
     "red": (1.0, 0.0, 0.0),
-    "yellow": (1.0, 1.0, 0.0),
+    "orange": (1.0, 0.5, 0.0),
     "purple": (0.6275, 0.1255, 0.9412),
     "cyan": (0.0, 1.0, 1.0),
     "green": (0.0, 1.0, 0.0),
-    "orange": (1.0, 0.5, 0.0),
+    "yellow": (1.0, 1.0, 0.0),
     "white": (1.0, 1.0, 1.0),
     "brown": (0.5, 0.1647, 0.1647),
     "grey": (0.7529, 0.7529, 0.7529),
@@ -22,13 +22,12 @@ def screenshot_mosaic_wrapper(
     filename,
     output_prefix="",
     directory=".",
-    skip=1,
     pad=20,
+    nb_rows=1,
     nb_columns=15,
     return_path=True,
     min_val=None,
     max_val=None,
-    offset_percent=0,
     is_labels=False,
 ):
     """
@@ -65,8 +64,6 @@ def screenshot_mosaic_wrapper(
         mosaic in array 2D
     """
     data = nib.load(filename).get_fdata()
-    offset = round(data.shape[2] * offset_percent)
-    skip = round((data.shape[2] - 2 * offset) / (nb_columns + 1))
     data = np.nan_to_num(data)
 
     output_prefix = output_prefix.replace(" ", "_") + "_"
@@ -90,7 +87,7 @@ def screenshot_mosaic_wrapper(
             tmp[data == label] = lut[label]
         data = tmp
 
-    imgs_comb = screenshot_mosaic(data, skip, pad, nb_columns, min_val, max_val, offset)
+    imgs_comb = screenshot_mosaic(data, pad, nb_rows, nb_columns, min_val, max_val)
     if return_path:
         image_name = os.path.basename(str(filename)).split(".")[0]
         name = os.path.join(directory, output_prefix + image_name + ".png")
@@ -106,30 +103,27 @@ def screenshot_mosaic_blend(
     output_prefix="",
     directory=".",
     blend_val=0.5,
-    skip=1,
     pad=20,
+    nb_rows=1,
     nb_columns=15,
     min_val=None,
     max_val=None,
-    offset_percent=0,
 ):
     mosaic_image = screenshot_mosaic_wrapper(
         image,
-        skip=skip,
         pad=pad,
+        nb_rows=nb_rows,
         nb_columns=nb_columns,
         return_path=False,
         min_val=min_val,
         max_val=max_val,
-        offset_percent=offset_percent,
     )
     mosaic_blend = screenshot_mosaic_wrapper(
         image_blend,
-        skip=skip,
         pad=pad,
+        nb_rows=nb_rows,
         nb_columns=nb_columns,
         return_path=False,
-        offset_percent=offset_percent,
         is_labels=True,
     )
 
@@ -141,9 +135,7 @@ def screenshot_mosaic_blend(
     return name
 
 
-def screenshot_mosaic(
-    data, skip, pad, nb_columns, min_val=None, max_val=None, offset=0
-):
+def screenshot_mosaic(data, pad, nb_rows, nb_columns, min_val=None, max_val=None):
     """
     Compute a mosaic from an image
 
@@ -174,8 +166,10 @@ def screenshot_mosaic(
     imgs_comb : array 2D
         mosaic in array 2D
     """
+    # offset remove the first and last slices
+    offset = int(data.shape[2] * 0.05)
+    skip = int(np.ceil((data.shape[2] - 2 * offset) / (nb_columns * nb_rows)))
     range_row = range(0, data.shape[2] - 2 * offset, skip)
-    nb_rows = int(np.ceil(len(range_row) / nb_columns))
     shape = (
         (data[:, :, 0].shape[1] + pad) * nb_rows + pad * nb_rows,
         (data[:, :, 0].shape[0] + pad) * nb_columns + nb_columns * pad,
@@ -204,7 +198,7 @@ def screenshot_mosaic(
     for i, idx in enumerate(range_row):
         corner = i % nb_columns
         row = int(i / nb_columns)
-        curr_img = np.rot90(data[:, :, idx + offset])
+        curr_img = np.rot90(data[:, :, idx])
         curr_img = np.pad(curr_img, padding, "constant").astype(dtype=np.uint8)
         curr_shape = curr_img.shape
         mosaic[
