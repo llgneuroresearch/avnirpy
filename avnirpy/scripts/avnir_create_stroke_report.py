@@ -107,7 +107,7 @@ def main():
         # Get previous timepoint data
         previous_df = timepoint_df.loc[
             timepoint_df.groupby("label_name")["date"].idxmax()
-        ]s
+        ]
 
         # Calculate differences
         for label in labels:
