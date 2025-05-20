@@ -62,7 +62,7 @@ class StrokeReport(Report):
     def __init__(self, patient_name, patient_id, date):
         super().__init__(patient_name, patient_id, date)
 
-    def render(self, volumetry_data, screenshot_path):
+    def render(self, volumetry_data, screenshot_path, timepoints=None):
         """
         Renders the stroke report using the provided volumetry data and screenshot path.
 
@@ -83,5 +83,6 @@ class StrokeReport(Report):
             "volumetry": volumetry_data,
             "screenshot": screenshot_path,
             "COLOR": [*colors],
+            "timepoints": timepoints,
         }
         self.html_content = template.render(data)
