@@ -140,7 +140,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    {{ "%.01f" | format(1000000 * region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}
+                    {{ "%.03f" | format(region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}
                     {% if "diff_volume_icv" in region %}
                         ({{ "%.03f" | format(region["diff_volume_icv"]) }})
                     {% endif %}
