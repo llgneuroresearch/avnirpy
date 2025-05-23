@@ -213,19 +213,6 @@ def screenshot_mosaic(data, pad, nb_rows, nb_columns, min_val=None, max_val=None
         ] = curr_img
 
     mosaic = np.pad(mosaic, axis_padding, "constant").astype(dtype=np.uint8)
-    if data.ndim < 4:
-        img = Image.fromarray(mosaic)
-        draw = ImageDraw.Draw(img)
-        try:
-            font_path = "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
-            fnt = ImageFont.truetype(font_path, 40)
-        except OSError:
-            fnt = ImageFont.load_default()
-        draw.text([mosaic.shape[1] / 2, 0], "A", fill=255, font=fnt)
-        draw.text([mosaic.shape[1] / 2, mosaic.shape[0] - 40], "P", fill=255, font=fnt)
-        draw.text([0, mosaic.shape[0] / 2], "L", fill=255, font=fnt)
-        draw.text([mosaic.shape[1] - 40, mosaic.shape[0] / 2], "R", fill=255, font=fnt)
-        mosaic = np.array(img, dtype=np.uint8)
 
     img = np.uint8(np.clip(mosaic, 0, 255))
     imgs_comb = Image.fromarray(img)

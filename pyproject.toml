@@ -44,6 +44,7 @@ dependencies = [
 avnir_compute_segmentation_stats = "avnirpy.scripts.avnir_compute_segmentation_stats:main"
 avnir_compute_volume_per_label = "avnirpy.scripts.avnir_compute_volume_per_label:main"
 avnir_create_stroke_report = "avnirpy.scripts.avnir_create_stroke_report:main"
+avnir_create_volumetric_report = "avnirpy.scripts.avnir_create_volumetric_report:main"
 avnir_json_to_csv = "avnirpy.scripts.avnir_json_to_csv:main"
 avnir_nifti_to_nrrd = "avnirpy.scripts.avnir_nifti_to_nrrd:main"
 avnir_nrrd_to_nifti = "avnirpy.scripts.avnir_nrrd_to_nifti:main"

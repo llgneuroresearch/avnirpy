@@ -86,3 +86,39 @@ class StrokeReport(Report):
             "timepoints": timepoints,
         }
         self.html_content = template.render(data)
+
+
+class VolumetryReport(Report):
+    def __init__(self, patient_name, patient_id, date, title, logo, header):
+        super().__init__(patient_name, patient_id, date)
+        self.logo = logo
+        self.header = header
+        self.title = title
+
+    def render(self, volumetry_data, screenshot_path, timepoints=None):
+        """
+        Renders the stroke report using the provided volumetry data and screenshot path.
+
+        Args:
+            volumetry_data (dict): The volumetry data to be included in the report.
+            screenshot_path (str): The file path to the screenshot image.
+
+        Returns:
+            None
+        """
+        from avnirpy.reporting.screenshot import colors
+
+        template = self.env.get_template("volumetric_report.html")
+        data = {
+            "title": self.title,
+            "logo": self.logo,
+            "header": self.header,
+            "patient_name": self.patient_name,
+            "patient_id": self.patient_id,
+            "date": self.date,
+            "volumetry": volumetry_data,
+            "screenshot": screenshot_path,
+            "COLOR": [*colors],
+            "timepoints": timepoints,
+        }
+        self.html_content = template.render(data)

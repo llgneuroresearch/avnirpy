@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <style>
+        @page {
+            size: letter;
+            margin-left: 0;
+            margin-right: 0;
+            background-color: #f4f4f9 !important;
+            @top-center {
+                content: "{{ header }}";
+            }
+            @bottom-center {
+                content: "{{patient_name}} {{patient_id}}";
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: small;
+            margin: 0in;
+            padding: 0in;
+            color: rgb(51, 51, 51);
+        }
+        .page {
+            padding-left: 1in;
+            padding-right: 1in;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-bottom: 2px solid #ccc;
+        }
+        .header img {
+            max-width: 150px;
+            height: auto;
+            margin-right: 20px;
+        }
+        .header h1 {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+            color: rgb(0, 64, 113);
+        }
+        .patient-info {
+            margin: 20px 0;
+            background-color: #ffffff;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .screenshot {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .screenshot img {
+            max-height: 600px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: rgb(114, 191, 68);
+            color: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            width: 30%
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        td:nth-child(1) {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <img src="{{logo}}" style="max-height: 100px;" alt="Logo CRCHUM">
+            <h1>{{title}}</h1>
+        </div>
+
+        <div class="patient-info">
+            <p><strong>Patient Name:</strong> {{patient_name}} <span style="float: right;"><strong>Date:</strong> {{date}}</span></p>
+            <p><strong>Patient ID:</strong> {{patient_id}}</p>
+        </div>
+
+        <div class="screenshot">
+            <img src="file://{{screenshot}}" alt="Brain screenshot" style="max-width:100%; border:1px solid black;">
+        </div>
+
+        <div class="analysis-table">
+            <h2>Region Volumes</h2>
+            <table>
+            <thead>
+                <tr>
+                <th style="width: 10%">Region</th>
+                {% if timepoints %}
+                    <th style="width: 10%">Change*</th>
+                {% endif %}
+                <th>Volume in ml</th>
+                <th>% of ICV**</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for region in volumetry %}
+                <tr>
+                <td style="width: 10%">
+                    <span style="display: inline-block; width: 15px; height: 15px; background-color: {{ COLOR[region["label_id"]|int] }}; margin-left: 5px;"></span>
+                    {{ region["label_name"] }}
+                </td>
+                {% if timepoints %}
+                    <td style="width: 10%; font-size: medium;">
+                        {% if region["diff_perc_volume"] > 5 %}
+                            <span style="color: green;">&#9650;</span>
+                        {% elif region["diff_perc_volume"] < -5 %}
+                            <span style="color: red;">&#9660;</span>
+                        {% else %}
+                            <span style="color: gray;">&#8771;</span>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td>
+                    {{ "%.01f" | format(region["volume"]) }}
+                    {% if "diff_volume" in region %}
+                        ({{ "%.03f" | format(region["diff_volume"]) }})
+                    {% endif %}
+                </td>
+                <td>
+                    {{ "%.03f" | format(region["volume_icv"]) if region["volume_icv"] is not none else 'N/A' }}
+                    {% if "diff_volume_icv" in region %}
+                        ({{ "%.03f" | format(region["diff_volume_icv"]) }})
+                    {% endif %}
+                </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            {% if timepoints %}
+                <p style="font-size: 0.8em; color: #666;">*Change in volume between the first and last timepoint. A change of more than 5% is considered significant.</p>
+            {% endif %}
+            <p style="font-size: 0.8em; color: #666;">**ICV = Intracranial Volume</p>
+        </div>
+
+        {% if timepoints %}
+        <div class="longitudinal-analysis">
+            <h2>Longitudinal Analysis</h2>
+            <div class="graphs-container" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for timepoint in timepoints %}
+                <div class="graph" style="flex: 1; min-width: 50%; max-width: 50%; box-sizing: border-box;">
+                    <img src="file://{{ timepoint }}" alt="Timepoint Graph" style="max-width: 100%; height: auto;">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <div class="disclaimer">
+            <h2>Medical Disclaimer</h2>
+            <p>All content found in this document, including: text, images, audio, or other formats were created for informational
+                purposes only. The content is not intended to be a substitute for professional medical advice, diagnosis, or treatment.
+                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a
+                medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read
+                in this document.
+                <br>This document does not recommend or endorse any specific tests, physicians, products, procedures, opinions, or other
+                information that may be mentioned herein. Reliance on any information provided in this document is solely at your own risk.</p>
+        </div>
+    </div>
+</body>
+</html>
