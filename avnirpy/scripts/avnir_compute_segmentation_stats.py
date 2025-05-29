@@ -28,6 +28,7 @@ import pandas as pd
 import numpy as np
 
 from avnirpy.io.image import load_nifti
+from concurrent.futures import ThreadPoolExecutor
 from avnirpy.io.utils import (
     assert_inputs_exist,
     assert_outputs_exist,
@@ -59,6 +60,18 @@ def _build_arg_parser():
         "--multilabel", action="store_true", help="Use multi-label mode."
     )
 
+    parser.add_argument(
+        "--measures",
+        nargs="+",
+        default=None,
+        help="List of measures to compute. If None, all measures are computed.",
+        choices=BPM(None, None).measures_dict.keys(),
+    )
+
+    parser.add_argument(
+        "--nb_threads", type=int, default=1, help="Number of threads to use."
+    )
+
     add_overwrite_arg(parser)
     add_verbose_arg(parser)
     add_version_arg(parser)
@@ -80,19 +93,20 @@ def main():
         args.output = args.output + ".csv"
 
     data = []
-    for i in os.listdir(args.predictions):
+
+    def process_segmentation(i):
         if not os.path.exists(os.path.join(args.ground_truth, i)):
             logging.warning(f"Segmentation {i} not found in both directories.")
-            continue
+            return []
 
         prediction, _, _ = load_nifti(os.path.join(args.predictions, i))
         reference, _, _ = load_nifti(os.path.join(args.ground_truth, i))
 
-        bpm = BPM(prediction, reference, measures=None)
+        bpm = BPM(prediction, reference, measures=args.measures)
         dict_seg = bpm.to_dict_meas()
         dict_seg["image"] = i
         dict_seg["label"] = "all"
-        data.append(dict_seg)
+        results = [dict_seg]
 
         if args.multilabel:
             labels = np.unique(reference)
@@ -101,11 +115,19 @@ def main():
                     continue
                 prediction_label = (prediction == label).astype(int)
                 reference_label = (reference == label).astype(int)
-                bpm = BPM(prediction_label, reference_label, measures=None)
+                bpm = BPM(prediction_label, reference_label, measures=args.measures)
                 dict_seg = bpm.to_dict_meas()
                 dict_seg["image"] = i
                 dict_seg["label"] = label
-                data.append(dict_seg)
+                results.append(dict_seg)
+
+        del bpm, prediction, reference
+        return results
+
+    with ThreadPoolExecutor(args.nb_threads) as executor:
+        all_results = executor.map(process_segmentation, os.listdir(args.predictions))
+        for result in all_results:
+            data.extend(result)
 
     df = pd.DataFrame(data)
     df = df[

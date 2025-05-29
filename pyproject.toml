@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering"
 ]
 dependencies = [
-"MetricsReloaded @ git+https://github.com/Project-MONAI/MetricsReloaded@monai-support",
+"MetricsReloaded @ git+https://github.com/Project-MONAI/MetricsReloaded@b6da9e10f1a0645626c1bbddf72501712ce40c1c",
 "monai==1.4.*",
 "nibabel==5.2.*",
 "numpy==1.26.*",
