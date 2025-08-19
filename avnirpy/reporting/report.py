@@ -95,13 +95,17 @@ class VolumetryReport(Report):
         self.header = header
         self.title = title
 
-    def render(self, volumetry_data, screenshot_path, timepoints=None):
+    def render(
+        self, volumetry_data, screenshot_path, timepoints=None, other_screenshots=None
+    ):
         """
         Renders the stroke report using the provided volumetry data and screenshot path.
 
         Args:
             volumetry_data (dict): The volumetry data to be included in the report.
             screenshot_path (str): The file path to the screenshot image.
+            timepoints (list, optional): A list of timepoint image paths.
+            other_screenshots (dict, optional): A dictionary of other screenshot paths.
 
         Returns:
             None
@@ -120,5 +124,6 @@ class VolumetryReport(Report):
             "screenshot": screenshot_path,
             "COLOR": [*colors],
             "timepoints": timepoints,
+            "other_screenshots": other_screenshots,
         }
         self.html_content = template.render(data)

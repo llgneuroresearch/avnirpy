@@ -83,6 +83,9 @@
         td:nth-child(1) {
             text-align: left;
         }
+        .other-screenshot img {
+            max-height: 600px;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +167,15 @@
                 </div>
                 {% endfor %}
             </div>
+        </div>
+        {% endif %}
+
+        {% if other_screenshots %}
+        <div class="other-screenshot">
+            {% for section_name, image_path in other_screenshots.items() %}
+                <h2>{{ section_name }}</h2>
+                <img src="file://{{ image_path }}" alt="{{ section_name }}" style="max-width: 100%; height: auto;">
+            {% endfor %}
         </div>
         {% endif %}
         <div class="disclaimer">

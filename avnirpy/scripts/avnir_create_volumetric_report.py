@@ -72,6 +72,24 @@ def _build_arg_parser():
         "--output_longitudinal", help="Path to the .json longitudinal data."
     )
 
+    parser.add_argument(
+        "--min_clip_value",
+        type=float,
+        help="Minimum clip value for volume.",
+    )
+
+    parser.add_argument(
+        "--max_clip_value",
+        type=float,
+        help="Maximum clip value for volume.",
+    )
+
+    parser.add_argument(
+        "--other_screenshots",
+        help="Path to the .json containing info about other screenshots data."
+        "The file should be in the following format: {'section_name': <full_image_path>, ...}",
+    )
+
     add_overwrite_arg(parser)
     add_version_arg(parser)
     return parser
@@ -192,9 +210,20 @@ def main():
         nb_columns=3,
         output_prefix="labels",
         directory=report.temp_dir,
+        min_val=args.min_clip_value,
+        max_val=args.max_clip_value,
     )
 
-    report.render(current_df.to_dict("records"), screenshot_path, timepoint_graphs)
+    if args.other_screenshots:
+        with open(args.other_screenshots, "r") as f:
+            other_screenshots = json.load(f)
+
+    report.render(
+        current_df.to_dict("records"),
+        screenshot_path,
+        timepoint_graphs,
+        other_screenshots,
+    )
     report.to_pdf(args.output_report)
     if args.output_longitudinal:
         all_timepoint_df.drop(
